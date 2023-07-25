@@ -10,35 +10,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Grid<T>
+public class CustomGrid<T>
 {
     [SerializeField] private int _width;
     [SerializeField] private int _height;
     [SerializeField] private float _cellWidth;
     [SerializeField] private float _cellHeight;
+    [SerializeField] private Vector3 _originPosition;
+   
     private T[,] grid;
 
     //Konstructor if cells are Squares
-    public Grid(int width, int height, float cellSize)
+    public CustomGrid(int width, int height, float cellSize, Vector3 originPosition)
     {
         this._width = width;
         this._height = height;
         this._cellWidth = cellSize;
         this._cellHeight= cellSize;
+        this._originPosition = originPosition;
 
         grid = new T[width, height];
-        //DebugTest();
+        DebugTest();
     }
 
-    public Grid(int width, int height, float cellWidth, float cellHeight)
+    public CustomGrid(int width, int height, float cellWidth, float cellHeight, Vector3 originPosition)
     {
         this._width = width;
         this._height = height;
         this._cellWidth = cellWidth;
         this._cellHeight = cellHeight;
+        this._originPosition = originPosition;
 
         grid = new T[width, height];
-        //DebugTest();
+        DebugTest();
     }
 
     private void DebugTest()
@@ -67,7 +71,7 @@ public class Grid<T>
         {
             for (int y = 0; y < _height; y++)
             {
-                yield return grid[x, y];
+                yield return GetObject(x,y);
             }
         }
     }
@@ -108,24 +112,36 @@ public class Grid<T>
 
     public Vector3 GetWorldPosition(int x, int y)
     {
-        return new Vector3(x * _cellWidth, y * _cellHeight);
+        return new Vector3(x * _cellWidth, y * _cellHeight) + _originPosition;
     }
 
     public Vector2Int GetGridCoordinatesFromWorldPosition2D(Vector3 worldPosition)
     {
-        int x = Mathf.FloorToInt(worldPosition.x / _cellWidth);
-        int y = Mathf.FloorToInt(worldPosition.y / _cellHeight);
+        int x = Mathf.FloorToInt((worldPosition - _originPosition).x / _cellWidth);
+        int y = Mathf.FloorToInt((worldPosition - _originPosition).y / _cellHeight);
        
         return new Vector2Int(x, y);
     }
 
     public Vector3Int GetGridCoordinatesFromWorldPosition3D(Vector3 worldPosition)
     {
-        int x = Mathf.FloorToInt(worldPosition.x / _cellWidth);
-        int y = Mathf.FloorToInt(worldPosition.y / _cellHeight);
+        int x = Mathf.FloorToInt((worldPosition - _originPosition).x / _cellWidth);
+        int y = Mathf.FloorToInt((worldPosition - _originPosition).y / _cellHeight);
         int z = 0;
 
         return new Vector3Int(x, y, z);
+    }
+
+    public T GetObject(int x, int y)
+    {
+        if(x >= 0 && y >= 0 && x < Width && y < Height)
+        {
+            return grid[x, y];
+        }
+        else
+        {
+            return default(T);
+        }
     }
 
     public void Clear()

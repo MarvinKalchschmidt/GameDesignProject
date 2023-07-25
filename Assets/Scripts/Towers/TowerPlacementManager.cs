@@ -2,75 +2,66 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerBuildManager : Singleton<TowerBuildManager>
-{ /*
-    //[SerializeField] private List<TowerStoreObject> _towerStoreObjects;
-    [SerializeField] private TowerStoreObject[] _towerStoreObjects;
-    private Grid<int> _grid;
+public class TowerPlacementManager : MonoBehaviour
+{
+    [SerializeField] private int _gridWidth = 10;
+    [SerializeField] private int _gridHeight = 10;
+    [SerializeField] private float _cellSize = 10f;
+
+    private CustomGrid<GridTowerObject> _grid;
     private BuildState _buildState;
     private Tower _currentTower;
-    private TowerInfoSO _currentTowerInfo;
+    public TowerInformation _currentTowerInfo;
     public List<Tower> _placedTowers = new List<Tower>();
 
     public static event Action<int> OnTowerPlaced;
     public static event Action<string> OnDisplayMessage;
-    public BuildState BuildState { get => _buildState; private set => _buildState = value; }   
-    public List<Tower> PlacedTowers { get => _placedTowers; private set => _placedTowers = value; }    
+    public BuildState BuildState { get => _buildState; private set => _buildState = value; }
+    public List<Tower> PlacedTowers { get => _placedTowers; private set => _placedTowers = value; }
 
     private void Start()
     {
-        _grid = TDGameManager.Instance.Grid;
+        _grid = new CustomGrid<GridTowerObject>(_gridWidth, _gridHeight, _cellSize, transform.position);
+        FillGrid();
         _buildState = BuildState.NotPlacingTower;
-        _towerStoreObjects = GameObject.FindGameObjectWithTag("TowerStore").GetComponentsInChildren<TowerStoreObject>();
-    }   
+    }
+
 
     private void Update()
     {
         if (BuildState == BuildState.PlacingTower && _currentTower != null)
         {
-            _currentTower.transform.position = GetMouseWorldPosition() + new Vector3(-0.75f, -0.5f, 0);
+            _currentTower.transform.position = GetMouseWorldPosition();
 
-            if (BoundsCheck3D(GetMouseWorldPosition())) {
+            if (!BoundsCheck3D(GetMouseWorldPosition()))
+            {
+                Vector2Int gridPosition = _grid.GetGridCoordinatesFromWorldPosition2D(GetMouseWorldPosition());
+                List<Vector2Int> towerBoundsList = _currentTowerInfo.GetTowerBoundsList(gridPosition);
+
                 bool allTilesUnoccupied = true;
-                Vector2Int towerPosition = _grid.GetGridCoordinatesFromWorldPosition2D(GetMouseWorldPosition());
-                List<Vector2Int> buildingBoundsList = _currentTowerInfo.GetBuildingBoundsList(towerPosition);
 
-                foreach (Vector2Int pos in buildingBoundsList)
+                foreach (Vector2Int pos in towerBoundsList)
                 {
-                    if (OccupiedTileCheck(_grid[pos.x, pos.y]))
-                    {
+                    if (!_grid.GetObject(pos.x, pos.y).OccupiedCheck())
+                    {                    
                         allTilesUnoccupied = false;
                         break;
                     }
-                }            
-           
-            /* Attempted to make a hover effect while placing a tower to visualize the validity of a current position, but couldnt be bothered to finish it
-             * foreach(Vector2Int pos in buildingBoundsList)
-            {
-                if(allTilesUnoccupied)
-                {
-                    _grid[pos.x, pos.y].ActivateHoverEffect(new Color(59, 219, 57, 83));
                 }
-                else
-                {
-                    _grid[pos.x, pos.y].ActivateHoverEffect(new Color(255, 17, 0, 83));
-                }
-            }*/ 
-/*
+        
                 if (Input.GetMouseButtonDown(0))
-                { 
+                {
                     if (allTilesUnoccupied)
-                    {                    
+                    {
                         BuildState = BuildState.NotPlacingTower;
-                        Vector3 towerLocation = new Vector3(towerPosition.x, towerPosition.y);
+                        Vector3 towerLocation = _grid.GetWorldPosition(gridPosition.x, gridPosition.y);
                         _currentTower.transform.position = towerLocation;
-                        _currentTower.BuildingBounds = buildingBoundsList;
-                        _currentTower.TowerIsPlaced = true;
-                        _placedTowers.Add(_currentTower);                      
-                        OnTowerPlaced?.Invoke(-1 * _currentTower.Cost);
-                        foreach (Vector2Int pos in buildingBoundsList)
+                        _placedTowers.Add(_currentTower);
+
+                        //Tower tower = SpawnTower(_currentTowerInfo.GetPrefab, _grid.GetWorldPosition(gridPosition.x, gridPosition.y));
+                        foreach (Vector2Int towerBound in towerBoundsList)
                         {
-                            _grid[pos.x, pos.y].SetTower(_currentTower);
+                            _grid.GetObject(towerBound.x, towerBound.y).SetTower(_currentTower);
                         }
                     }
                     else
@@ -78,17 +69,28 @@ public class TowerBuildManager : Singleton<TowerBuildManager>
                         OnDisplayMessage?.Invoke("Can't build here.");
                         Debug.Log("Can't Build Here");
                     }
-                }
+                    }
 
                 if (Input.GetMouseButtonDown(1))
                 {                
                     DestroyTower(_currentTower);
                 }
             }
-        }      
-    } 
+        }   
+    }
+
+    private void FillGrid()
+    {
+        for (int x = 0; x < _grid.Width; x++)
+        {
+            for (int y = 0; y < _grid.Height; y++)
+            {
+                _grid[x, y] = new GridTowerObject(x, y);
+            }
+        }
+    }
     
-    public void OnButtonSpawnTower(TowerInfoSO towerInfo)
+    public void OnButtonSpawnTower(TowerInformation towerInfo)
     {
         if (CanAffordTower(towerInfo))
         {
@@ -121,15 +123,11 @@ public class TowerBuildManager : Singleton<TowerBuildManager>
         }        
     }
 
-    private bool CanAffordTower(TowerInfoSO towerInfo)
+    private bool CanAffordTower(TowerInformation towerInfo)
     {
-        return TDGameManager.Instance.Money >= towerInfo.Cost;
-    }
-
-    private bool OccupiedTileCheck(Tile tile)
-    {
-        return tile.IsOccupied || tile.TileType == TileType.Path || tile.TileType == TileType.Obstacle;   
-    }
+        //return TDGameManager.Instance.Money >= towerInfo.Cost;
+        return true;
+    }   
 
     private bool BoundsCheck3D(Vector3 vectorToCheck)
     {
@@ -147,21 +145,7 @@ public class TowerBuildManager : Singleton<TowerBuildManager>
         _placedTowers.Remove(towerToDestroy);
         Destroy(towerToDestroy.gameObject);
     }
-
-    public void UnhoverOtherStoreObjects(TowerInfoSO towerInfo)
-    {
-        foreach(TowerStoreObject towerStoreObject in _towerStoreObjects)
-        {
-            if(towerInfo.Name == towerStoreObject.GetTowerInfo.Name)
-            {
-                continue;
-            }
-            else
-            {
-                towerStoreObject.Hovered = false;
-            }
-        }
-    }
+ 
 
     public void ClearTowers()
     {
@@ -178,9 +162,42 @@ public class TowerBuildManager : Singleton<TowerBuildManager>
         Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPosition.z = 0;
         return mouseWorldPosition;
-    }   */
-    
+    }
+ }
+
+public class GridTowerObject
+{
+    private int x;
+    private int y;
+    private Tower _tower;
+
+    public GridTowerObject(int x, int y)
+    {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void SetTower(Tower tower)
+    {
+        this._tower = tower;
+    }
+
+    public bool OccupiedCheck()
+    {
+        return _tower == null;
+    }
+
+    public void ClearTower()
+    {
+        _tower = null;
+    }
+
+    public override string ToString()
+    {
+        return "(" + x + ", " + y + "): " + _tower.TowerType;
+    }
 }
+
 public enum BuildState
 {
     NotPlacingTower,
