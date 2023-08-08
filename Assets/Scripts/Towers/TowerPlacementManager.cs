@@ -11,7 +11,7 @@ public class TowerPlacementManager : MonoBehaviour
     private CustomGrid<GridTowerObject> _grid;
     private BuildState _buildState;
     private Tower _currentTower;
-    public TowerInformation _currentTowerInfo;
+    private TowerInformation _currentTowerInfo;
     public List<Tower> _placedTowers = new List<Tower>();
 
     public static event Action<int> OnTowerPlaced;

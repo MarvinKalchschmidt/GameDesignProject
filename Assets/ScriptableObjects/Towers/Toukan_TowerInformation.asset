@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59684af207125a1428eeab18137223f3, type: 3}
+  m_Name: Toukan_TowerInformation
+  m_EditorClassIdentifier: 
+  _name: Toukan
+  _cost: 400
+  _damage: 80
+  _description: Toukan flying around and stuff
+  _towerPrefab: {fileID: 8414470925357803104, guid: 2f805dc23f0dbfb4f9e0b53cb42a0e24, type: 3}
+  _buildWidth: 2
+  _buildHeight: 2

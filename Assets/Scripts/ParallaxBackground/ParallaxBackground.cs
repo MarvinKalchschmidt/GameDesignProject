@@ -8,17 +8,17 @@ public class ParallaxBackground : MonoBehaviour
   [SerializeField] private ParallaxCamera parallaxCamera;
   List<ParallaxLayer> parallaxLayers = new List<ParallaxLayer>();
 
-  void Start()
-  {
+    private void Start()
+    {
       if (parallaxCamera == null)
         parallaxCamera = Camera.main.GetComponent<ParallaxCamera>();
       if (parallaxCamera != null)
         parallaxCamera.onCameraTranslate += Move;
       SetLayers();
-  }
+    }
 
-  void SetLayers()
-  {
+    private void SetLayers()
+    {
       parallaxLayers.Clear();
       for (int i = 0; i < transform.childCount; i++)
       {
@@ -33,9 +33,9 @@ public class ParallaxBackground : MonoBehaviour
     }
 
 
-  void Move(float delta)
+    private void Move(float delta)
     {
-        foreach (ParallaxLayer layer in parallaxLayers)
+      foreach (ParallaxLayer layer in parallaxLayers)
       {
           layer.Move(delta);
       }

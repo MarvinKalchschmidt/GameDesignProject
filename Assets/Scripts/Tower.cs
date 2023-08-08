@@ -129,5 +129,5 @@ public enum TowerType
 {
     Monkey = 0,
     Toucan = 1,
-    Puma = 2
+    Leopard = 2
 }

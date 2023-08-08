@@ -15,8 +15,9 @@ public class EnemyWaveSpawner : MonoBehaviour
 
     public List<Enemy> enemiesAlive = new List<Enemy>();
     private ObjectPool<Enemy> _enemyPool;  
-    public int _currentWaveIndex;   
+    private int _currentWaveIndex;
     public bool _spawnEnemies = true;
+
 
     private void Start()
     {  
@@ -43,7 +44,7 @@ public class EnemyWaveSpawner : MonoBehaviour
     private Enemy CreateEnemyPoolObject()
     {
         EnemyWave currentWave = _enemyWaves[_currentWaveIndex];
-        Enemy enemy = Instantiate(currentWave.GetEnemyPrefabs[UnityEngine.Random.Range(0, currentWave.GetEnemyPrefabs.Length)]);       
+        Enemy enemy = Instantiate(currentWave.GetEnemyPrefabs[UnityEngine.Random.Range(0, currentWave.GetEnemyPrefabs.Length)]);
         enemy.DestroyEnemy += ReleaseEnemyToPool;
         enemy.gameObject.SetActive(false);
         return enemy;
