@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "TowerInformation", menuName = "Tower Information")]
+[CreateAssetMenu(fileName = "New TowerInformation", menuName = "Tower Information")]
 public class TowerInformation : ScriptableObject
 {
     [SerializeField] private string _name;
@@ -32,5 +33,16 @@ public class TowerInformation : ScriptableObject
 
         }
         return buildingBoundsList;
+    }
+
+    public string GetTooltipInfo()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.Append("<color=green>Cost: ").Append(_cost).Append(" Fruit").Append("</color>").AppendLine();
+        builder.Append("<color=red>Damage: ").Append(_damage).Append("</color>").AppendLine();
+        builder.Append("Description: ").Append(_description).AppendLine();
+
+        return builder.ToString();        
     }
 }

@@ -109,7 +109,6 @@ MonoBehaviour:
   _speed: 4
   _direction: {x: -1, y: 0}
   _boxCollider: {fileID: 716488046071176393}
-  _treeOfLife: {fileID: 5439298497323628549, guid: cf015e073b55c1b428f811246d36fcb4, type: 3}
   _treeOfLifeLayer:
     serializedVersion: 2
     m_Bits: 256
@@ -133,7 +132,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &1132820423
 BoxCollider2D:
   m_ObjectHideFlags: 0

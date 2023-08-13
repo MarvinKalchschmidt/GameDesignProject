@@ -15,7 +15,8 @@ MonoBehaviour:
   _name: Leopard
   _cost: 300
   _damage: 80
-  _description: Leopard biting and scratching shit
+  _description: The leopard is ready to pounce on enemies at close range. Its lightning-fast
+    strikes make short work of foes that dare to approach.
   _towerPrefab: {fileID: 8414470925357803104, guid: d5e3879ead3b33b41b753156d650c06f, type: 3}
   _buildWidth: 2
   _buildHeight: 3

@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TowerPlacementManager : MonoBehaviour
+public class TowerPlacementManager : Singleton<TowerPlacementManager>
 {
-    [SerializeField] private int _gridWidth = 10;
-    [SerializeField] private int _gridHeight = 10;
-    [SerializeField] private float _cellSize = 10f;
+    [SerializeField] private int _gridWidth;
+    [SerializeField] private int _gridHeight;
+    [SerializeField] private float _cellSize;
+
+    [SerializeField] Vector2 _minBounds;
+    [SerializeField] Vector2 _maxBounds;
+
 
     private CustomGrid<GridTowerObject> _grid;
     private BuildState _buildState;
@@ -16,34 +20,115 @@ public class TowerPlacementManager : MonoBehaviour
 
     public static event Action<int> OnTowerPlaced;
     public static event Action<string> OnDisplayMessage;
+
     public BuildState BuildState { get => _buildState; private set => _buildState = value; }
     public List<Tower> PlacedTowers { get => _placedTowers; private set => _placedTowers = value; }
 
     private void Start()
-    {
+    { 
         _grid = new CustomGrid<GridTowerObject>(_gridWidth, _gridHeight, _cellSize, transform.position);
         FillGrid();
         _buildState = BuildState.NotPlacingTower;
     }
 
+    private void FixedUpdate()
+    {
+        if (BuildState != BuildState.PlacingTower || _currentTower == null)
+        {
+            return;
+        }
+
+        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        if (_currentTower != null)
+        {
+            _currentTower.transform.position = mouseWorldPosition;
+        }    
+    }
 
     private void Update()
     {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if(_currentTower != null)
+            {
+                DestroyTower(_currentTower);
+            }
+        }
+
+        if (BuildState != BuildState.PlacingTower || _currentTower == null)
+        {
+            return;
+        }
+
+        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+
+        if (!BoundsCheck3D(mouseWorldPosition))
+        {
+            return;
+        }
+
+        Vector2Int gridPosition = _grid.GetGridCoordinatesFromWorldPosition2D(mouseWorldPosition);
+        List<Vector2Int> towerBoundsList = _currentTowerInfo.GetTowerBoundsList(gridPosition);
+        bool allTilesUnoccupied = true;
+
+        foreach (Vector2Int pos in towerBoundsList)
+        {
+            if (BoundsCheck2D(pos) && !_grid.GetObject(pos.x, pos.y).OccupiedCheck())
+            {
+                allTilesUnoccupied = false;
+                break;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (allTilesUnoccupied)
+            {
+                BuildState = BuildState.NotPlacingTower;
+                Vector3 towerLocation = _grid.GetWorldPosition(gridPosition.x, gridPosition.y);
+                _currentTower.transform.position = towerLocation;
+                _placedTowers.Add(_currentTower);
+
+                foreach (Vector2Int towerBound in towerBoundsList)
+                {
+                    if (BoundsCheck2D(towerBound))
+                    {
+                        Debug.Log("SUCCESS: " + towerBound + " " + BoundsCheck2D(towerBound));
+                        _grid.GetObject(towerBound.x, towerBound.y).SetTower(_currentTower);
+                    }
+                    else
+                    {
+                        Debug.Log("FAILED: " + towerBound + " " + BoundsCheck2D(towerBound));
+                    }
+                }
+            }
+            else
+            {
+                OnDisplayMessage?.Invoke("Can't build here.");
+                Debug.Log("Can't Build Here");
+            }           
+        }
+
+       
+       
+
+        /*
         if (BuildState == BuildState.PlacingTower && _currentTower != null)
         {
-            _currentTower.transform.position = GetMouseWorldPosition();
+            Vector3 mouseWorldPosition = GetMouseWorldPosition();
+            _currentTower.transform.position = mouseWorldPosition;
 
-            if (!BoundsCheck3D(GetMouseWorldPosition()))
+            if (BoundsCheck3D(mouseWorldPosition))
             {
-                Vector2Int gridPosition = _grid.GetGridCoordinatesFromWorldPosition2D(GetMouseWorldPosition());
+                Vector2Int gridPosition = _grid.GetGridCoordinatesFromWorldPosition2D(mouseWorldPosition);
                 List<Vector2Int> towerBoundsList = _currentTowerInfo.GetTowerBoundsList(gridPosition);
 
                 bool allTilesUnoccupied = true;
 
                 foreach (Vector2Int pos in towerBoundsList)
                 {
-                    if (!_grid.GetObject(pos.x, pos.y).OccupiedCheck())
-                    {                    
+                    if (BoundsCheck2D(pos) && !_grid.GetObject(pos.x, pos.y).OccupiedCheck())
+                    {
                         allTilesUnoccupied = false;
                         break;
                     }
@@ -58,7 +143,6 @@ public class TowerPlacementManager : MonoBehaviour
                         _currentTower.transform.position = towerLocation;
                         _placedTowers.Add(_currentTower);
 
-                        //Tower tower = SpawnTower(_currentTowerInfo.GetPrefab, _grid.GetWorldPosition(gridPosition.x, gridPosition.y));
                         foreach (Vector2Int towerBound in towerBoundsList)
                         {
                             _grid.GetObject(towerBound.x, towerBound.y).SetTower(_currentTower);
@@ -69,14 +153,14 @@ public class TowerPlacementManager : MonoBehaviour
                         OnDisplayMessage?.Invoke("Can't build here.");
                         Debug.Log("Can't Build Here");
                     }
-                    }
+                }
 
                 if (Input.GetMouseButtonDown(1))
                 {                
                     DestroyTower(_currentTower);
                 }
             }
-        }   
+        } */
     }
 
     private void FillGrid()
@@ -91,48 +175,29 @@ public class TowerPlacementManager : MonoBehaviour
     }
     
     public void OnButtonSpawnTower(TowerInformation towerInfo)
-    {
-        if (CanAffordTower(towerInfo))
-        {
-            _currentTowerInfo = towerInfo;
-            switch (BuildState)
-            {
-                case BuildState.NotPlacingTower:
-                    BuildState = BuildState.PlacingTower;
-                    _currentTower = SpawnTower(towerInfo.GetPrefab, GetMouseWorldPosition());
-                    _currentTower.Cost = towerInfo.Cost;
-                    _currentTower.ShowRangeRadius();                    
-                    break;
-                case BuildState.PlacingTower:
-                    if(_currentTower != null) {
-                        DestroyTower(_currentTower);
-                    }
-                    _currentTower = SpawnTower(towerInfo.GetPrefab, GetMouseWorldPosition());                    
-                    _currentTower.Cost = towerInfo.Cost;
-                    _currentTower.ShowRangeRadius();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }            
-        }
-        else
-        {
-            Debug.Log("Not Enough Money");
-            OnDisplayMessage?.Invoke("Not enough money.");
-            return;
-        }        
-    }
+    {      
+        _currentTowerInfo = towerInfo;      
 
-    private bool CanAffordTower(TowerInformation towerInfo)
-    {
-        //return TDGameManager.Instance.Money >= towerInfo.Cost;
-        return true;
-    }   
+        if (BuildState == BuildState.PlacingTower && _currentTower != null)
+        {
+            DestroyTower(_currentTower);
+        }
+
+        BuildState = BuildState.PlacingTower;
+        _currentTower = SpawnTower(towerInfo.GetPrefab, GetMouseWorldPosition());
+        _currentTower.Cost = towerInfo.Cost;
+        //_currentTower.ShowRangeRadius();
+    }
 
     private bool BoundsCheck3D(Vector3 vectorToCheck)
     {
         return vectorToCheck.x >= 0 && vectorToCheck.x < _grid.Width && vectorToCheck.y >= 0 && vectorToCheck.y < _grid.Height;
-    }   
+    }
+
+    private bool BoundsCheck2D(Vector2Int vectorToCheck)
+    {
+        return vectorToCheck.x >= 0 && vectorToCheck.x < _grid.Width && vectorToCheck.y >= 0 && vectorToCheck.y < _grid.Height;
+    }
 
     public Tower SpawnTower(Tower towerToSpawn, Vector3 position)
     {
@@ -144,8 +209,7 @@ public class TowerPlacementManager : MonoBehaviour
     {
         _placedTowers.Remove(towerToDestroy);
         Destroy(towerToDestroy.gameObject);
-    }
- 
+    } 
 
     public void ClearTowers()
     {

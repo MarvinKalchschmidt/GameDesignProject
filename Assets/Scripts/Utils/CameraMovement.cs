@@ -4,28 +4,18 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [SerializeField] private float speed = 50f;  
-    [SerializeField] private float edgeThreshold;  
-
-    private void Start(){
-        edgeThreshold = Screen.width * 0.2f;
-    }
+    [SerializeField] private float _speed = 50f;
+    [SerializeField] private int _edgeThreshold = 50;
+    [SerializeField] private float _minX;
+    [SerializeField] private float _maxX;
 
     private void FixedUpdate()
-    {       
-        Vector2 inputVector = new Vector2(Input.GetAxis("Horizontal"), 0f);
-        /*if (Input.mousePosition.x < edgeThreshold)
-        {
-            inputVector.x -= 1f;
-        }
-        else if (Input.mousePosition.x > Screen.width - edgeThreshold)
-        {
-            inputVector.x += 1f;
-        }
-        else {
-            inputVector.x = Input.GetAxis("Horizontal");
-        }*/
+    {
+        Vector3 movementVector = new Vector3(Input.GetAxis("Horizontal"), 0, 0) * _speed* Time.fixedDeltaTime;
+        Vector3 targetPosition = transform.position + movementVector;
 
-        transform.Translate(inputVector * speed * Time.deltaTime);                  
+        targetPosition.x = Mathf.Clamp(targetPosition.x, _minX, _maxX);
+
+        transform.position = targetPosition;
     }
 }

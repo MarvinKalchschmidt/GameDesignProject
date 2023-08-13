@@ -15,7 +15,9 @@ MonoBehaviour:
   _name: Toukan
   _cost: 400
   _damage: 80
-  _description: Toukan flying around and stuff
+  _description: From the highest branches, the Toucan takes to the air, hurtling
+    down upon enemies with precision and speed. With each dive, it deals substantial
+    damage, leaving enemies bewildered and battered.
   _towerPrefab: {fileID: 8414470925357803104, guid: 2f805dc23f0dbfb4f9e0b53cb42a0e24, type: 3}
   _buildWidth: 2
   _buildHeight: 2

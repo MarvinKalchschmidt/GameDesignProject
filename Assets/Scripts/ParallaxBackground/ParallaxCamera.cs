@@ -22,6 +22,7 @@ using UnityEngine;
                 float delta = oldPosition - transform.position.x;
                 onCameraTranslate(delta);
             }
+
             oldPosition = transform.position.x;
         }
     }
