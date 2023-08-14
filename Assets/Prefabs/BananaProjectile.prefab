@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 7637609596621975823}
   - component: {fileID: 7937205227928069838}
   - component: {fileID: 2177407386778209231}
+  - component: {fileID: 3603144508613998466}
   m_Layer: 0
   m_Name: BananaProjectile
-  m_TagString: Untagged
+  m_TagString: BananaProjectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -26,8 +27,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9171936737635171315}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -45.94, y: -6.82, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -98,3 +99,61 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetEnemy: {fileID: 0}
+  _projectileState: 0
+  _bananaSpeed: 1
+  _bananaDamage: 0
+--- !u!60 &3603144508613998466
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9171936737635171315}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2, y: 2.66}
+    newSize: {x: 2, y: 2.66}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.31, y: -0.65}
+      - {x: 0.44, y: -0.47}
+      - {x: 0.63, y: -0.16}
+      - {x: 0.6942115, y: -0.016052868}
+      - {x: 0.7382908, y: 0.11394711}
+      - {x: 0.7402644, y: 0.3640793}
+      - {x: 0.71210575, y: 0.50197357}
+      - {x: 0.58, y: 0.72999996}
+      - {x: 0.48, y: 0.83}
+      - {x: 0.32999998, y: 0.96999997}
+      - {x: 0.25, y: 1.04}
+      - {x: 0.28, y: 1.16}
+      - {x: 0.24, y: 1.24}
+      - {x: 0.049999997, y: 1.24}
+      - {x: -0.02, y: 1.16}
+      - {x: -0.06, y: 1.0699999}
+      - {x: -0.089999996, y: 0.98999995}
+      - {x: -0.11, y: 0.25}
+      - {x: -0.14999999, y: 0.01}
+      - {x: -0.31, y: -0.25}
+      - {x: -0.78, y: -0.81}
+      - {x: -0.90999997, y: -0.98999995}
+      - {x: -0.93, y: -1.02}
+      - {x: -0.93, y: -1.06}
+      - {x: -0.9, y: -1.15}
+      - {x: -0.84999996, y: -1.1999999}
+      - {x: -0.4262236, y: -1.1801897}
+      - {x: -0.12990505, y: -1.0601898}
+      - {x: -0.02018989, y: -0.9835866}
+      - {x: 0.21, y: -0.77}

@@ -11,6 +11,4 @@ public class GameManager : Singleton<GameManager>
     private void Start() {
         _enemyWaveSpawner.StartEnemySpawning();
     }
-
-
 }

@@ -30,7 +30,7 @@ public class CustomGrid<T>
         this._originPosition = originPosition;
 
         grid = new T[width, height];
-        DebugTest();
+        //DebugTest();
     }
 
     public CustomGrid(int width, int height, float cellWidth, float cellHeight, Vector3 originPosition)
@@ -42,7 +42,7 @@ public class CustomGrid<T>
         this._originPosition = originPosition;
 
         grid = new T[width, height];
-        DebugTest();
+        //DebugTest();
     }
 
     private void DebugTest()

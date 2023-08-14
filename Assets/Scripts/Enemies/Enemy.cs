@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour
 
         _cooldownTimer += Time.fixedDeltaTime;
 
-        if (Test())
+        if (CheckForTarget())
         {
             if (_cooldownTimer >= _attackCooldown)
             {
@@ -92,7 +92,7 @@ public class Enemy : MonoBehaviour
         DestroyEnemy?.Invoke(this);
     }
 
-    private bool Test()
+    private bool CheckForTarget()
     {
         RaycastHit2D hit = Physics2D.BoxCast(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size, 0, Vector2.left, 0, _treeOfLifeLayer);
         if(hit.collider != null)
@@ -108,9 +108,17 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawWireCube(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size);
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("BananaProjectile"))
+        {
+            TakeDamage(other.gameObject.GetComponent<BananaProjectile>().BananaDamage);
+        }
+    }
+  
     public void DoDamage()
     {
-        if (Test())
+        if (CheckForTarget())
         {
             _treeOfLife.TakeDamage(_damage);
         }

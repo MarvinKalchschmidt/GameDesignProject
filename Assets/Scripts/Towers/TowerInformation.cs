@@ -8,6 +8,7 @@ public class TowerInformation : ScriptableObject
     [SerializeField] private string _name;
     [SerializeField] private int _cost;
     [SerializeField] private int _damage;
+    [SerializeField] private int _attackSpeed;
     [SerializeField] [TextArea] private string _description;
     [SerializeField] private Tower _towerPrefab;
     [SerializeField] private int _buildWidth;
@@ -16,6 +17,7 @@ public class TowerInformation : ScriptableObject
     public string Name { get => _name; }
     public int Cost { get => _cost; }
     public int Damage { get => _damage; }
+    public int AttackSpeed { get => _attackSpeed; }
     public string Description { get => _description; }
     public Tower GetPrefab { get => _towerPrefab; }
     public int BuildWidth { get => _buildWidth; }
@@ -39,9 +41,10 @@ public class TowerInformation : ScriptableObject
     {
         StringBuilder builder = new StringBuilder();
 
-        builder.Append("<color=green>Cost: ").Append(_cost).Append(" Fruit").Append("</color>").AppendLine();
         builder.Append("<color=red>Damage: ").Append(_damage).Append("</color>").AppendLine();
+        builder.Append("<color=red>Attack Speed: ").Append(_attackSpeed).Append("</color>").AppendLine();
         builder.Append("Description: ").Append(_description).AppendLine();
+        builder.Append("<color=green>Cost: ").Append(_cost).Append(" Fruit").Append("</color>").AppendLine();
 
         return builder.ToString();        
     }

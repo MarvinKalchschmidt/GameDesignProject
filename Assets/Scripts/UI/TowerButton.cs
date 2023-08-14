@@ -11,6 +11,14 @@ public class TowerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     public static event Action<string> OnDisplayMessage;
 
+    private void Start()
+    {
+        if (_tooltip == null)
+        {
+            _tooltip = GameObject.FindGameObjectWithTag("TowerTooltip").GetComponent<Tooltip>();
+        }
+    }
+
 
     public void OnButtonSpawnTower(TowerInformation towerInfo)
     {
@@ -46,6 +54,4 @@ public class TowerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         _tooltip.HideTooltip();
     }
-
-
 }

@@ -15,9 +15,10 @@ MonoBehaviour:
   _name: Monkey
   _cost: 200
   _damage: 80
+  _attackSpeed: 0
   _description: The Monkey swings into action, launching boomerang bananas that curve
     and hit enemies with a satisfying thud. Its skilled throws can hit multiple foes
     in their path.
-  _towerPrefab: {fileID: 8414470925357803104, guid: 3d0aed9f9c8d42e47879f5a3106000d1, type: 3}
+  _towerPrefab: {fileID: 4596874724544786467, guid: 3d0aed9f9c8d42e47879f5a3106000d1, type: 3}
   _buildWidth: 3
   _buildHeight: 3
