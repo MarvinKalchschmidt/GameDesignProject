@@ -36,8 +36,7 @@ public class TowerButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
     private bool CanAffordTower(TowerInformation towerInfo)
     {
-        //return TDGameManager.Instance.Money >= towerInfo.Cost;
-        return true;
+        return GameManager.Instance.Money >= towerInfo.Cost;        
     }
 
     public void OnPointerClick(PointerEventData eventData)

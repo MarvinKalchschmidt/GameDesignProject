@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2226977517208770365}
   - component: {fileID: 8336524814863816493}
   - component: {fileID: 4596874724544786467}
+  - component: {fileID: -3156393308724691044}
   m_Layer: 7
   m_Name: MonkeyTower
   m_TagString: Tower
@@ -121,18 +122,32 @@ MonoBehaviour:
   _damage: 100
   _attackSpeed: 0
   _cooldown: 3
-  _projectileSummonPoint: {fileID: 2950137413958515846}
   _circleCollider: {fileID: 8336524814863816493}
-  _rangeRadiusSpriteRenderer: {fileID: 2313602502930106417}
   _towerIsPlaced: 0
-  _towerType: 0
-  _range: 0
-  _damage: 0
-  _attackSpeed: 0
-  _cooldown: 0
-  _projectileSummonPoint: {fileID: 0}
-  _circleCollider: {fileID: 0}
-  _rangeRadiusSpriteRenderer: {fileID: 0}
+  _enemiesWithinRange: []
+  _projectileSummonPoint: {fileID: 2950137413958515846}
+  _rangeRadiusSpriteRenderer: {fileID: 2313602502930106417}
+--- !u!95 &-3156393308724691044
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045510442052092722}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 672ddaef8c88255439b784c9d04d35c4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3088562975801703654
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,17 +4,31 @@ using UnityEngine;
 
 public class MonkeyTower : Tower
 {
-    protected float _cooldownTimer;   
+    [SerializeField] protected Transform _projectileSummonPoint;
+    [SerializeField] protected SpriteRenderer _rangeRadiusSpriteRenderer;
+    [SerializeField] public TowerUpgradeHolder _towerUpgradeHolder;
 
+    private float _cooldownTimer;
+    private bool toggleUpgradeButton = false;
+
+    private void Awake()
+    {
+        if (_rangeRadiusSpriteRenderer == null)
+        {
+            _rangeRadiusSpriteRenderer = _projectileSummonPoint.GetComponentInChildren<SpriteRenderer>();
+        }
+
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
+        if (_towerUpgradeHolder == null)
+        {
+            _towerUpgradeHolder = GameObject.FindGameObjectWithTag("TowerUpgradeHolder").GetComponent<TowerUpgradeHolder>();
+        }
+    }
     private void Update()
     {
-        Debug.Log(_enemiesWithinRange.Count);
-        Attack();
-    }
-
-    protected override void Attack()
-    {
-        Debug.Log("Test");
         if (_towerIsPlaced && _enemiesWithinRange.Count > 0)
         {
             //Maybe add GameState to only check when Wave is generating
@@ -22,14 +36,23 @@ public class MonkeyTower : Tower
 
             if (_cooldownTimer <= 0f)
             {
-                Enemy targetEnemy = GetEnemyWithinRadius();
                 _cooldownTimer = _cooldown;
-                ShootBanana(_projectileSummonPoint.transform.position, targetEnemy, _attackSpeed, _damage);
+                _animator.SetTrigger("attack");
             }
         }
     }
 
-     private Enemy GetEnemyWithinRadius()
+    protected override void Attack()
+    {
+        if(_enemiesWithinRange.Count > 0)
+        {
+            Enemy targetEnemy = GetEnemyWithinRadius();
+            ShootBanana(_projectileSummonPoint.transform.position, targetEnemy, _attackSpeed, _damage);
+        }        
+    } 
+
+
+    private Enemy GetEnemyWithinRadius()
     {
         Enemy closestEnemy = null;
         float closestDistanceSqr = Mathf.Infinity;
@@ -50,18 +73,36 @@ public class MonkeyTower : Tower
     private void ShootBanana(Vector3 bananaSummPosition, Enemy targetEnemy, float speed, float damage)
     {
         ProjectileSpawner.Instance.SummonBanana(bananaSummPosition, targetEnemy.transform.position, targetEnemy, speed, damage);
-    }    
+    }
 
     private void OnMouseDown()
     {
+        /*
         if (_towerIsPlaced)
         {
-            //ShowRangeRadius();
-        }
+            if (!toggleUpgradeButton)
+            {
+                //ShowRangeRadius();
+                _towerUpgradeHolder.ShowUpgradesForTower(this, Camera.main.WorldToScreenPoint(transform.position));
+                toggleUpgradeButton = true;
+
+            }
+            else
+            {
+                //HideRangeRadius();
+                _towerUpgradeHolder.HideUpgradesForTower();
+                toggleUpgradeButton = false;
+            }    
+        }*/
     }
 
-    private void OnMouseExit()
+    private void ShowRangeRadius()
     {
-        //HideRangeRadius();
+        _rangeRadiusSpriteRenderer.enabled = true;
     }
+
+    private void HideRangeRadius()
+    {
+        _rangeRadiusSpriteRenderer.enabled = false;
+    }   
 }

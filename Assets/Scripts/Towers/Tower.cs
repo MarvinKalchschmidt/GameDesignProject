@@ -9,11 +9,11 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] protected float _damage;
     [SerializeField] protected float _attackSpeed;
     [SerializeField] protected float _cooldown;
-    [SerializeField] protected Transform _projectileSummonPoint;
     [SerializeField] protected CircleCollider2D _circleCollider;
-    [SerializeField] protected SpriteRenderer _rangeRadiusSpriteRenderer;
     [SerializeField] protected bool _towerIsPlaced;
     [SerializeField] protected List<Enemy> _enemiesWithinRange;
+
+    protected Animator _animator;
 
     public TowerType TowerType { get => _towerType; set => _towerType = value; }    
     public float Damage { get => _damage; set => _damage = value; }    
@@ -28,10 +28,7 @@ public abstract class Tower : MonoBehaviour
         {
             _circleCollider = GetComponent<CircleCollider2D>();
         }
-        if (_rangeRadiusSpriteRenderer == null)
-        {
-            _rangeRadiusSpriteRenderer = _projectileSummonPoint.GetComponentInChildren<SpriteRenderer>();
-        }
+        
     }  
 
 
@@ -44,21 +41,10 @@ public abstract class Tower : MonoBehaviour
         {           
             _circleCollider.radius += addedRange * 0.1f;
         }
-    }
-
-    public virtual void ShowRangeRadius()
-    {
-        _rangeRadiusSpriteRenderer.enabled = true;
-    }
-
-    public virtual void HideRangeRadius()
-    {
-        _rangeRadiusSpriteRenderer.enabled = false;
-    }
+    }   
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("EnemyTrigger");
         if (other.CompareTag("Enemy"))
         {
             _enemiesWithinRange.Add(other.gameObject.GetComponent<Enemy>());
@@ -71,20 +57,7 @@ public abstract class Tower : MonoBehaviour
         {
             _enemiesWithinRange.Remove(other.gameObject.GetComponent<Enemy>());
         }
-    }
-
-    private void OnMouseDown()
-    {
-        if(_towerIsPlaced)
-        {
-            //ShowRangeRadius();
-        }
-    }
-
-    private void OnMouseExit()
-    {
-        //HideRangeRadius();
-    }
+    }   
 }
 
 public enum TowerType

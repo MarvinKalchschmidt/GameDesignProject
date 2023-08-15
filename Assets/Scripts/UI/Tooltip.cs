@@ -30,6 +30,18 @@ public class Tooltip : MonoBehaviour
         _toolTipRect.transform.position = tooltipPosition;
     }
 
+    public void ShowTooltip(TowerUpgrade towerUpgrade, Vector3 targetPosition)
+    {
+        _headerText.text = towerUpgrade.Name;
+        _infoText.text = towerUpgrade.GetTooltipInfo();
+
+        _toolTip.SetActive(true);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_toolTipRect);
+
+        Vector3 tooltipPosition = targetPosition + _offset;
+        _toolTipRect.transform.position = tooltipPosition;
+    }
+
     public void HideTooltip()
     {
         _toolTip.SetActive(false);

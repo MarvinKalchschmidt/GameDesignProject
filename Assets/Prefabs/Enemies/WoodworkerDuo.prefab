@@ -104,7 +104,7 @@ MonoBehaviour:
   _maxHealth: 200
   _currentHealth: 0
   _damage: 100
-  _attackCooldown: 5
+  _attackCooldown: 3
   _killReward: 200
   _speed: 6
   _direction: {x: -1, y: 0}

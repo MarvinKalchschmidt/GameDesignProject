@@ -9,6 +9,7 @@ public class TreeOfLife : MonoBehaviour
     [SerializeField] private float _currentHealth;
 
     public static event Action<float> OnDamageTaken;
+    public static event Action<GameOverState> OnTreeDead;
     
     public float MaxHealth { get => _maxHealth; set => _maxHealth = value; }
     public float CurrentHealth { get => _currentHealth; set => _currentHealth = value; }
@@ -24,7 +25,7 @@ public class TreeOfLife : MonoBehaviour
         OnDamageTaken?.Invoke(_currentHealth);
         if (_currentHealth <= 0)
         {
-            //Trigger Game Over
+            OnTreeDead?.Invoke(GameOverState.Loss);
         }
     }
 

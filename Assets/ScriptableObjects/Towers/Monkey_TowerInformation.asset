@@ -15,7 +15,7 @@ MonoBehaviour:
   _name: Monkey
   _cost: 200
   _damage: 80
-  _attackSpeed: 0
+  _attackSpeed: 50
   _description: The Monkey swings into action, launching boomerang bananas that curve
     and hit enemies with a satisfying thud. Its skilled throws can hit multiple foes
     in their path.

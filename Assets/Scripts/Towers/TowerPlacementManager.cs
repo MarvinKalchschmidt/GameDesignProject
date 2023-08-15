@@ -87,18 +87,16 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
                 BuildState = BuildState.NotPlacingTower;
                 Vector3 towerLocation = _grid.GetWorldPosition(gridPosition.x, gridPosition.y);
                 InitTower(_currentTower, towerLocation);
-                _placedTowers.Add(_currentTower);
 
                 foreach (Vector2Int towerBound in towerBoundsList)
                 {
                     if (BoundsCheck2D(towerBound))
                     {
-                        Debug.Log("SUCCESS: " + towerBound + " " + BoundsCheck2D(towerBound));
                         _grid.GetObject(towerBound.x, towerBound.y).SetTower(_currentTower);
                     }
                     else
                     {
-                        Debug.Log("FAILED: " + towerBound + " " + BoundsCheck2D(towerBound));
+                        OnDisplayMessage?.Invoke("Can't build here.");
                     }
                 }
             }
@@ -115,6 +113,8 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
         tower.transform.position = towerLocation;
         tower.Damage = _currentTowerInfo.Damage;
         tower.TowerIsPlaced = true;
+        OnTowerPlaced.Invoke(_currentTowerInfo.Cost * -1);
+        _placedTowers.Add(tower);
     }
 
     private void FillGrid()
@@ -176,7 +176,7 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
 
     private Vector3 GetMouseWorldPosition()
     {
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);        
         mouseWorldPosition.z = 0;
         return mouseWorldPosition;
     }
