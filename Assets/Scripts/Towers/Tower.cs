@@ -12,8 +12,7 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] protected CircleCollider2D _circleCollider;
     [SerializeField] protected bool _towerIsPlaced;
     [SerializeField] protected List<Enemy> _enemiesWithinRange;
-
-    protected Animator _animator;
+    [SerializeField] protected Animator _animator;
 
     public TowerType TowerType { get => _towerType; set => _towerType = value; }    
     public float Damage { get => _damage; set => _damage = value; }    
@@ -28,7 +27,10 @@ public abstract class Tower : MonoBehaviour
         {
             _circleCollider = GetComponent<CircleCollider2D>();
         }
-        
+        if (_animator == null)
+        {
+            _animator = GetComponent<Animator>();
+        }
     }  
 
 

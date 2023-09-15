@@ -4,19 +4,16 @@ using UnityEngine;
 
 public class LeopardTower : Tower
 {
-    [SerializeField] public TowerUpgradeHolder _towerUpgradeHolder;
-    private bool toggleUpgradeButton = false;
     [SerializeField] private LayerMask _enemyLayer;
+    [SerializeField] private TowerUpgradeHolder _towerUpgradeHolder;
+
+    private bool toggleUpgradeButton = false;
     private float _cooldownTimer;
 
     private Enemy _currentEnemy;
 
     private void Awake() 
-    {
-        if (_animator == null)
-        {
-            _animator = GetComponent<Animator>();
-        }
+    {       
         if (_towerUpgradeHolder == null)
         {
             _towerUpgradeHolder = GameObject.FindGameObjectWithTag("TowerUpgradeHolder").GetComponent<TowerUpgradeHolder>();
@@ -55,6 +52,7 @@ public class LeopardTower : Tower
             _currentEnemy.TakeDamage(_damage);
         }
     }
+
     private void OnMouseDown()
     {
         if (_towerIsPlaced)

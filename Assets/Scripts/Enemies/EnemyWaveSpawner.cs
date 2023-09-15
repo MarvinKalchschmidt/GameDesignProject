@@ -37,7 +37,7 @@ public class EnemyWaveSpawner : MonoBehaviour
 
     public void StartEnemySpawning()
     {
-        _countdown = _timeBetweenWaves;
+        //_countdown = _timeBetweenWaves;
         StartCoroutine(RunSpawner());
     }
 
@@ -100,7 +100,7 @@ public class EnemyWaveSpawner : MonoBehaviour
             _enemyPool.Get();
             yield return new WaitForSeconds(currentWave.SpawnRate);
         }
-        _countdown = _timeBetweenWaves;
+        //_countdown = _timeBetweenWaves;
     }
 
     private void InitEnemy(Enemy enemy)
@@ -120,5 +120,5 @@ public class EnemyWaveSpawner : MonoBehaviour
             }
         }
         return enemiesAlive.Count > 0;
-    }  
+    }
 }

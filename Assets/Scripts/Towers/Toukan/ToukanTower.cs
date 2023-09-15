@@ -16,11 +16,7 @@ public class ToukanTower : Tower
     private Enemy _currentEnemy;
 
     private void Awake()
-    {
-        if (_animator == null)
-        {
-            _animator = GetComponent<Animator>();
-        }
+    {       
         if (_towerUpgradeHolder == null)
         {
             _towerUpgradeHolder = GameObject.FindGameObjectWithTag("TowerUpgradeHolder").GetComponent<TowerUpgradeHolder>();

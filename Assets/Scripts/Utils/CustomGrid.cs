@@ -20,7 +20,7 @@ public class CustomGrid<T>
    
     private T[,] grid;
 
-    //Konstructor if cells are Squares
+    //Constructor if cells are Squares
     public CustomGrid(int width, int height, float cellSize, Vector3 originPosition)
     {
         this._width = width;
@@ -86,7 +86,7 @@ public class CustomGrid<T>
     {
         get => _height; 
         set => _height = value; 
-    }
+    }      
 
     public float CellWidth
     {
@@ -98,6 +98,12 @@ public class CustomGrid<T>
     {
         get => _cellHeight;
         set => _cellHeight = value;
+    }
+
+    public Vector3 OriginPosition
+    {
+        get => _originPosition;
+        set => _originPosition = value;
     }
 
     public T[,] GetGrid
@@ -113,6 +119,11 @@ public class CustomGrid<T>
     public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x * _cellWidth, y * _cellHeight) + _originPosition;
+    }
+
+    public Vector3 GetWorldPositionSnapped(float x, float y)
+    {        
+        return new Vector3(Mathf.Round(x / _cellWidth) * _cellWidth, Mathf.Round(y / _cellHeight) * _cellHeight) + _originPosition;
     }
 
     public Vector2Int GetGridCoordinatesFromWorldPosition2D(Vector3 worldPosition)

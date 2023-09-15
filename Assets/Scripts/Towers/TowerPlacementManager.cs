@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TowerPlacementManager : Singleton<TowerPlacementManager>
 {
     [SerializeField] private int _gridWidth;
     [SerializeField] private int _gridHeight;
     [SerializeField] private float _cellSize;
+    [SerializeField] private Tilemap _tilemap;
 
     [SerializeField] Vector2 _minBounds;
     [SerializeField] Vector2 _maxBounds;
-
 
     private CustomGrid<GridTowerObject> _grid;
     private BuildState _buildState;
@@ -23,13 +24,22 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
 
     public BuildState BuildState { get => _buildState; private set => _buildState = value; }
     public List<Tower> PlacedTowers { get => _placedTowers; private set => _placedTowers = value; }
+    public CustomGrid<GridTowerObject> GetGrid { get => _grid; }
 
-    private void Start()
+
+    private void Awake()
     { 
         _grid = new CustomGrid<GridTowerObject>(_gridWidth, _gridHeight, _cellSize, transform.position);
-        FillGrid();
+        FillGrid();      
+
+        if (_tilemap == null)
+        {
+            _tilemap = gameObject.GetComponent<Tilemap>();
+        }
+        _tilemap.InitTilemap(_grid);
+        HideTilemap();
         _buildState = BuildState.NotPlacingTower;
-    }
+    }    
 
     private void FixedUpdate()
     {
@@ -41,7 +51,7 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
         Vector3 mouseWorldPosition = GetMouseWorldPosition();
         if (_currentTower != null)
         {
-            _currentTower.transform.position = mouseWorldPosition;
+            _currentTower.transform.position = Vector3.Lerp(_currentTower.transform.position, _grid.GetWorldPositionSnapped(mouseWorldPosition.x - _grid.CellWidth/2, mouseWorldPosition.y - _grid.CellHeight / 2), Time.fixedDeltaTime * 10f);
         }    
     }
 
@@ -53,6 +63,7 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
             {
                 DestroyTower(_currentTower);
             }
+            HideTilemap();
         }
 
         if (BuildState != BuildState.PlacingTower || _currentTower == null)
@@ -82,6 +93,11 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
 
         if (Input.GetMouseButtonDown(0))
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
             if (allTilesUnoccupied)
             {
                 BuildState = BuildState.NotPlacingTower;
@@ -93,6 +109,7 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
                     if (BoundsCheck2D(towerBound))
                     {
                         _grid.GetObject(towerBound.x, towerBound.y).SetTower(_currentTower);
+                        HideTilemap();
                     }
                     else
                     {
@@ -123,7 +140,15 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
         {
             for (int y = 0; y < _grid.Height; y++)
             {
-                _grid[x, y] = new GridTowerObject(x, y);
+                GridTowerObject gridTowerObject = new GridTowerObject(x, y);
+
+                if(x < _minBounds.x || x >= _grid.Width - _maxBounds.x || y < _minBounds.y || y >= _grid.Height - _maxBounds.y)
+                {
+                    Debug.Log("Occupied");
+                    gridTowerObject.Occupied = true;
+                }
+
+                _grid[x, y] = gridTowerObject;
             }
         }
     }
@@ -138,6 +163,7 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
         }
 
         BuildState = BuildState.PlacingTower;
+        ShowTilemap();
         _currentTower = SpawnTower(towerInfo.GetPrefab, GetMouseWorldPosition());
         //_currentTower.ShowRangeRadius();
     }
@@ -150,6 +176,18 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
     private bool BoundsCheck2D(Vector2Int vectorToCheck)
     {
         return vectorToCheck.x >= 0 && vectorToCheck.x < _grid.Width && vectorToCheck.y >= 0 && vectorToCheck.y < _grid.Height;
+    }
+
+    private void ShowTilemap()
+    {
+        _tilemap.gameObject.SetActive(true);
+        _tilemap.UpdateTileMap();
+    }
+    
+    private void HideTilemap()
+    {
+        _tilemap.UpdateTileMap();
+        _tilemap.gameObject.SetActive(false);
     }
 
     public Tower SpawnTower(Tower towerToSpawn, Vector3 position)
@@ -182,10 +220,11 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
     }
  }
 
-public class GridTowerObject
+public class GridTowerObject 
 {
     private int x;
     private int y;
+    private bool _occupied;
     private Tower _tower;
 
     public GridTowerObject(int x, int y)
@@ -199,9 +238,11 @@ public class GridTowerObject
         this._tower = tower;
     }
 
+    public bool Occupied { get => _occupied; set { _occupied = value; } }
+
     public bool OccupiedCheck()
     {
-        return _tower == null;
+        return _tower == null && !Occupied;
     }
 
     public void ClearTower()
@@ -219,4 +260,11 @@ public enum BuildState
 {
     NotPlacingTower,
     PlacingTower
+}
+
+public enum TilemapSprite
+{
+    None = 0,
+    Green = 1,
+    Red = 2
 }

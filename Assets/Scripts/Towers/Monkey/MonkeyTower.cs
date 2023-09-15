@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MonkeyTower : Tower
 {
-    [SerializeField] protected Transform _projectileSummonPoint;
-    [SerializeField] protected SpriteRenderer _rangeRadiusSpriteRenderer;
+    [SerializeField] private Transform _projectileSummonPoint;
+    //[SerializeField] private SpriteRenderer _rangeRadiusSpriteRenderer;
     [SerializeField] public TowerUpgradeHolder _towerUpgradeHolder;
 
     private float _cooldownTimer;
@@ -13,15 +13,11 @@ public class MonkeyTower : Tower
 
     private void Awake()
     {
+        /*
         if (_rangeRadiusSpriteRenderer == null)
         {
             _rangeRadiusSpriteRenderer = _projectileSummonPoint.GetComponentInChildren<SpriteRenderer>();
-        }
-
-        if (_animator == null)
-        {
-            _animator = GetComponent<Animator>();
-        }
+        } */       
         if (_towerUpgradeHolder == null)
         {
             _towerUpgradeHolder = GameObject.FindGameObjectWithTag("TowerUpgradeHolder").GetComponent<TowerUpgradeHolder>();
@@ -96,6 +92,7 @@ public class MonkeyTower : Tower
         }*/
     }
 
+    /*
     private void ShowRangeRadius()
     {
         _rangeRadiusSpriteRenderer.enabled = true;
@@ -104,5 +101,5 @@ public class MonkeyTower : Tower
     private void HideRangeRadius()
     {
         _rangeRadiusSpriteRenderer.enabled = false;
-    }   
+    }*/   
 }

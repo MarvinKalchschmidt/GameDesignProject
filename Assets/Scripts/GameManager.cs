@@ -15,11 +15,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private int _money;
     [SerializeField] private int _waveCount;
     [SerializeField] private int _startMoney;
+    private static GameOverState _gameOverState;
 
     /**UI**/
     [SerializeField] private TMP_Text _moneyCountText;
     [SerializeField] private TMP_Text _wavesCountText;
     [SerializeField] private GameObject _displayMessage;
+
+    private AsyncOperation _asyncOperation;
 
     public int Money { get => _money; set { _money = value; UpdateMoneyCount(); } }
     public int WaveCount { get => _waveCount; set { _waveCount = value; _enemyWaveSpawner.WaveIndex = value; UpdateWaveCount(_waveCount, 5); } }
@@ -51,6 +54,7 @@ public class GameManager : Singleton<GameManager>
         Enemy.OnEnemyDiesFromDamage += AddKillReward;
         EnemyWaveSpawner.OnWaveStarting += ManageWaveCount;
         EnemyWaveSpawner.OnWaveCompleted += CheckForLastWaveCompleted;
+        TreeOfLife.OnDamageTaken += CheckForTreeAboutToDie;
         TreeOfLife.OnTreeDead += GameOver;
         TowerPlacementManager.OnTowerPlaced += ManageMoney;
         TowerPlacementManager.OnDisplayMessage += DisplayMessage;
@@ -64,6 +68,7 @@ public class GameManager : Singleton<GameManager>
         Enemy.OnEnemyDiesFromDamage -= AddKillReward;
         EnemyWaveSpawner.OnWaveStarting -= ManageWaveCount;
         EnemyWaveSpawner.OnWaveCompleted -= CheckForLastWaveCompleted;
+        TreeOfLife.OnDamageTaken -= CheckForTreeAboutToDie;
         TreeOfLife.OnTreeDead -= GameOver;
         TowerPlacementManager.OnTowerPlaced -= ManageMoney;
         TowerPlacementManager.OnDisplayMessage -= DisplayMessage;
@@ -109,25 +114,29 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    private void CheckForTreeAboutToDie(float currentHealth)
+    {
+        if(currentHealth <= _treeOFLife.MaxHealth * 0.2f)
+        {
+
+        }
+    }
+
     private void CheckForLastWaveCompleted(int currentWaveIndex)
     {
         if (currentWaveIndex == _enemyWaveSpawner.MaxWaveCount)
         {
             GameOver(GameOverState.Win);
         }
-    }
-
-    private void SetCamera()
-    {
-        //TODO Camerafahrt Tutorial
-    }
+    }  
 
     private void GameOver(GameOverState gameOverState)
     {
-        if(gameOverState == GameOverState.Win)
+        _gameOverState = gameOverState;
+        if (gameOverState == GameOverState.Win)
         {
             Debug.Log("YOU WIN");
-            DisplayMessage("YOU WIN");
+            
         }
         else
         {
