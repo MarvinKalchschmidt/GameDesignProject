@@ -10,21 +10,23 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
     [SerializeField] private float _cellSize;
     [SerializeField] private Tilemap _tilemap;
 
-    [SerializeField] Vector2 _minBounds;
-    [SerializeField] Vector2 _maxBounds;
+    [SerializeField] private Vector2 _minBounds;
+    [SerializeField] private Vector2 _maxBounds;
 
     private CustomGrid<GridTowerObject> _grid;
     private BuildState _buildState;
     private Tower _currentTower;
     private TowerInformation _currentTowerInfo;
     public List<Tower> _placedTowers = new List<Tower>();
+    [SerializeField] private int _maxAmountOfTowers;
 
     public static event Action<int> OnTowerPlaced;
     public static event Action<string> OnDisplayMessage;
 
     public BuildState BuildState { get => _buildState; private set => _buildState = value; }
     public List<Tower> PlacedTowers { get => _placedTowers; private set => _placedTowers = value; }
-    public CustomGrid<GridTowerObject> GetGrid { get => _grid; }
+    public CustomGrid<GridTowerObject> GetGrid { get => _grid; private set => _grid = value; }
+    public int MaxAmountOfTowers { get => _maxAmountOfTowers; set => _maxAmountOfTowers = value; }
 
 
     private void Awake()
@@ -126,10 +128,8 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
     }
 
     private void InitTower(Tower tower, Vector3 towerLocation)
-    {
-        tower.transform.position = towerLocation;
-        tower.Damage = _currentTowerInfo.Damage;
-        tower.TowerIsPlaced = true;
+    {       
+        tower.InitTower(towerLocation, _currentTowerInfo.Damage);
         OnTowerPlaced.Invoke(_currentTowerInfo.Cost * -1);
         _placedTowers.Add(tower);
     }
@@ -144,7 +144,6 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
 
                 if(x < _minBounds.x || x >= _grid.Width - _maxBounds.x || y < _minBounds.y || y >= _grid.Height - _maxBounds.y)
                 {
-                    Debug.Log("Occupied");
                     gridTowerObject.Occupied = true;
                 }
 
@@ -154,7 +153,12 @@ public class TowerPlacementManager : Singleton<TowerPlacementManager>
     }
     
     public void OnButtonSpawnTower(TowerInformation towerInfo)
-    {      
+    {
+        if (!GameManager.Instance.ControllsEnabled)
+        {
+            return;
+        }
+
         _currentTowerInfo = towerInfo;      
 
         if (BuildState == BuildState.PlacingTower && _currentTower != null)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,8 +10,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private TowerPlacementManager _towerPlacementManager;
     [SerializeField] private TreeOfLife _treeOFLife;
     [SerializeField] private Camera _camera;
-
-
+    [SerializeField] private bool _controllsEnabled;    
+    
     /**Game Logic**/
     [SerializeField] private int _money;
     [SerializeField] private int _waveCount;
@@ -21,12 +22,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private TMP_Text _moneyCountText;
     [SerializeField] private TMP_Text _wavesCountText;
     [SerializeField] private GameObject _displayMessage;
+    [SerializeField] private GameObject _countdownMessage;
 
     private AsyncOperation _asyncOperation;
 
     public int Money { get => _money; set { _money = value; UpdateMoneyCount(); } }
     public int WaveCount { get => _waveCount; set { _waveCount = value; _enemyWaveSpawner.WaveIndex = value; UpdateWaveCount(_waveCount, 5); } }
-
+    public bool ControllsEnabled { get => _controllsEnabled; set { _controllsEnabled = value; } }
+    public static GameOverState GameOverState { get => _gameOverState; set { _gameOverState = value; } }
 
 
     private void Init(Scene scene, LoadSceneMode mode) {
@@ -43,9 +46,7 @@ public class GameManager : Singleton<GameManager>
                 _towerPlacementManager = GameObject.Find("TowerPlacementManager").GetComponent<TowerPlacementManager>();
             }
             _money = _startMoney;
-            _enemyWaveSpawner.StartEnemySpawning();
             UpdateMoneyCount();
-            UpdateWaveCount(_enemyWaveSpawner.WaveIndex, _enemyWaveSpawner.MaxWaveCount);
         }
     }
 
@@ -54,12 +55,20 @@ public class GameManager : Singleton<GameManager>
         Enemy.OnEnemyDiesFromDamage += AddKillReward;
         EnemyWaveSpawner.OnWaveStarting += ManageWaveCount;
         EnemyWaveSpawner.OnWaveCompleted += CheckForLastWaveCompleted;
-        TreeOfLife.OnDamageTaken += CheckForTreeAboutToDie;
+        EnemyWaveSpawner.OnDisplayCountdown += WaveCountdown;
+        TreeOfLife.OnFirstDamageTaken += StartHealFruitSpawner;
+        TreeOfLife.OnTreeHealthLow += CheckForTreeAboutToDie;
         TreeOfLife.OnTreeDead += GameOver;
         TowerPlacementManager.OnTowerPlaced += ManageMoney;
         TowerPlacementManager.OnDisplayMessage += DisplayMessage;
         TowerButton.OnDisplayMessage += DisplayMessage;      
-        UpgradeButton.OnDisplayMessage += DisplayMessage;      
+        Tower.OnUpgradeBought += ManageMoney;
+        Tower.OnDisplayMessage += DisplayMessage;
+        UpgradeButton.OnDisplayMessage += DisplayMessage;
+        HealFruit.OnHealFruitClicked += HealTreeOfLife;
+        CameraMovement.OnAnimationFinished += EnableControlls;
+        TutorialManager.OnTutorialStart += StartTutorialWave;
+        TutorialManager.OnTutorialCompleted += StartWaveSpawner;
         SceneManager.sceneLoaded += Init;
     }
 
@@ -68,19 +77,38 @@ public class GameManager : Singleton<GameManager>
         Enemy.OnEnemyDiesFromDamage -= AddKillReward;
         EnemyWaveSpawner.OnWaveStarting -= ManageWaveCount;
         EnemyWaveSpawner.OnWaveCompleted -= CheckForLastWaveCompleted;
-        TreeOfLife.OnDamageTaken -= CheckForTreeAboutToDie;
+        EnemyWaveSpawner.OnDisplayCountdown -= WaveCountdown;
+        TreeOfLife.OnFirstDamageTaken -= StartHealFruitSpawner;
+        TreeOfLife.OnTreeHealthLow -= CheckForTreeAboutToDie;
         TreeOfLife.OnTreeDead -= GameOver;
         TowerPlacementManager.OnTowerPlaced -= ManageMoney;
         TowerPlacementManager.OnDisplayMessage -= DisplayMessage;
         TowerButton.OnDisplayMessage -= DisplayMessage;
+        Tower.OnUpgradeBought -= ManageMoney;
+        Tower.OnDisplayMessage -= DisplayMessage;
         UpgradeButton.OnDisplayMessage -= DisplayMessage;
+        HealFruit.OnHealFruitClicked -= HealTreeOfLife;
+        CameraMovement.OnAnimationFinished -= EnableControlls;
+        TutorialManager.OnTutorialStart -= StartTutorialWave;
+        TutorialManager.OnTutorialCompleted -= StartWaveSpawner;
         SceneManager.sceneLoaded -= Init;
+    }     
+    
+    private void EnableControlls()
+    {
+        ControllsEnabled = true;
     }
 
-    private void DisplayMessage(string messageToDisplay)
+    private void StartTutorialWave()
     {
-        _displayMessage.GetComponentInChildren<TMP_Text>().text = messageToDisplay;
-        _displayMessage.GetComponent<FadeComponent>().Fade();
+        _enemyWaveSpawner.StartTutorialEnemySpawning();
+        UpdateWaveCount(_enemyWaveSpawner.WaveIndex, _enemyWaveSpawner.MaxWaveCount);
+    }
+
+    private void StartWaveSpawner()
+    {
+        _enemyWaveSpawner.StartEnemySpawning();
+        UpdateWaveCount(_enemyWaveSpawner.WaveIndex, _enemyWaveSpawner.MaxWaveCount);
     }
 
     private void AddKillReward(int reward)
@@ -110,16 +138,59 @@ public class GameManager : Singleton<GameManager>
         _wavesCountText.SetText($"Wave: {currentWaveIndex}/{maxWaves}");
         if (currentWaveIndex == maxWaves)
         {
-            //PreloadMainMenu();
+            PreloadEndScene();
         }
     }
 
-    private void CheckForTreeAboutToDie(float currentHealth)
+    private void CheckForTreeAboutToDie()
     {
-        if(currentHealth <= _treeOFLife.MaxHealth * 0.2f)
-        {
+        PreloadEndScene();
+    }
 
+    private void PreloadEndScene()
+    {
+        _asyncOperation = SceneManager.LoadSceneAsync("EndScene");
+        _asyncOperation.allowSceneActivation = false;
+    }
+
+    private void DisplayMessage(string messageToDisplay)
+    {
+        _displayMessage.GetComponentInChildren<TMP_Text>().text = messageToDisplay;
+        _displayMessage.GetComponent<FadeComponent>().Fade();
+    }
+
+    private void WaveCountdown(float countdown)
+    {
+        StartCoroutine(StartCountdown(countdown));
+    }
+
+    private IEnumerator StartCountdown(float countdown)
+    {
+        float timeRemaining = countdown;
+
+        _countdownMessage.GetComponentInChildren<TMP_Text>().text = "Wave Starting...";
+        _countdownMessage.GetComponent<FadeComponent>().FadeIn();
+
+        yield return new WaitForSeconds(1.5f); // Wait for 1.5 seconds
+
+        while (timeRemaining > 0)
+        {
+            _countdownMessage.GetComponentInChildren<TMP_Text>().text = Mathf.CeilToInt(timeRemaining).ToString();
+            yield return new WaitForSeconds(1.0f); // Wait for 1 second
+            timeRemaining -= 1.0f;
         }
+
+        _countdownMessage.GetComponent<FadeComponent>().FadeOut();
+    }
+
+    private void HealTreeOfLife(float heal)
+    {
+        _treeOFLife.Heal(heal);
+    }
+
+    private void StartHealFruitSpawner()
+    {
+        //TODO SPAWNER EINBAUEN
     }
 
     private void CheckForLastWaveCompleted(int currentWaveIndex)
@@ -136,18 +207,12 @@ public class GameManager : Singleton<GameManager>
         if (gameOverState == GameOverState.Win)
         {
             Debug.Log("YOU WIN");
-            
         }
         else
         {
             Debug.Log("YOU LOSE");
-            DisplayMessage("YOU LOSE");
         }
-        //Time.timeScale = 0; Freeze game
-        //_towerDefenseMenuUI.SetActive(true);
-        //_towerDefenseGameUI.SetActive(false);
-        //ResetGame();
-        //_asyncOperation.allowSceneActivation = true;
+        _asyncOperation.allowSceneActivation = true;
     }
 }
 

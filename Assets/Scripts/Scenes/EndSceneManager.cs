@@ -16,15 +16,15 @@ public class EndSceneManager : MonoBehaviour
     [SerializeField] private string[] _contributors;
     [SerializeField] private string _sceneName = "GameScene";
 
-
     private AsyncOperation _asyncOperation;
 
-    private void Awake()
+    private void Start()
     {
         _newGameButton.onClick.AddListener(RestartGame);
         _quitGameButton.onClick.AddListener(QuitGame);
         _contributorsText.text = GenerateContributorsText();
-        DisplayWinLoseImage(true);
+        DisplayWinLoseImage(GameManager.GameOverState);
+        StartCoroutine(FadeInComponents());
     }
 
     private void OnEnable()
@@ -57,6 +57,17 @@ public class EndSceneManager : MonoBehaviour
         Application.Quit();
     }
 
+    private IEnumerator FadeInComponents()
+    {
+        yield return new WaitForSeconds(1f);
+        if (_imageWin.IsActive()) _imageWin.GetComponent<FadeComponent>().FadeIn();
+        if (_imageLose.IsActive()) _imageLose.GetComponent<FadeComponent>().FadeIn();
+        _newGameButton.GetComponent<FadeComponent>().FadeIn();
+        _quitGameButton.GetComponent<FadeComponent>().FadeIn();
+        _loadingText.GetComponent<FadeComponent>().FadeIn();
+        _contributorsText.GetComponent<FadeComponent>().FadeIn();
+    }
+
     private IEnumerator LoadAsyncScene()
     {
         yield return null;
@@ -70,22 +81,22 @@ public class EndSceneManager : MonoBehaviour
 
             if (_asyncOperation.progress >= 0.9f)
             {
-                _loadingText.text = "Loading of Tower Defense completed.";
+                _loadingText.text = "Loading of Djungle Defenders completed.";
             }
 
             yield return null;
         }
     }
 
-    private void DisplayWinLoseImage(bool win)
+    private void DisplayWinLoseImage(GameOverState gameOverState)
     {
-        if (win)
+        if (gameOverState == GameOverState.Win)
         {
             _imageWin.gameObject.SetActive(true);
         }
-        else
-        {
-        _imageLose.gameObject.SetActive(true);
+        else if (gameOverState == GameOverState.Loss)
+        {           
+            _imageLose.gameObject.SetActive(true);
         }
     }
     

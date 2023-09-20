@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class FadeComponent : MonoBehaviour
-{    
-    private CanvasGroup _canvasGroup;
-    [SerializeField] private float _duration = 0.4f;
+{
+    [SerializeField] private CanvasGroup _canvasGroup;
+    [SerializeField] private float _duration;
     [SerializeField] private float _fadePause = 2;
 
     void Start()
     {
+        if(_canvasGroup == null)
+        {
         _canvasGroup = GetComponent<CanvasGroup>();
+        }
     }
 
     public void Fade()
     {   
         StartCoroutine(FadeInOut());
-        //_canvasGroup, _canvasGroup.alpha, _isFadedOut ? 1 : 0)        
+    }
+
+    public void FadeIn()
+    {
+        StartCoroutine(FadeInStay());
+    }
+
+    public void FadeOut()
+    {
+        StartCoroutine(FadeOutStay());
     }
 
     private IEnumerator FadeInOut()
@@ -29,6 +41,16 @@ public class FadeComponent : MonoBehaviour
 
     }
 
+    private IEnumerator FadeInStay()
+    {
+        yield return Fade(_canvasGroup, 0, 1);
+    }
+
+    private IEnumerator FadeOutStay()
+    {
+        yield return Fade(_canvasGroup, 1, 0);
+    }
+
     private IEnumerator Fade(CanvasGroup canvasGroup, float start, float end)
     {
         float counter = 0f;
@@ -38,5 +60,5 @@ public class FadeComponent : MonoBehaviour
             canvasGroup.alpha = Mathf.Lerp(start, end, counter / _duration);
             yield return null;
         }
-    }
+    }    
 }

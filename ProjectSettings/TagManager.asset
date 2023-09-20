@@ -22,7 +22,7 @@ TagManager:
   - Enemy
   - Tower
   - TreeOfLife
-  - 
+  - HealFruit
   - 
   - 
   - 
@@ -48,4 +48,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: HealFruit
+    uniqueID: 2080807393
+    locked: 0
+  - name: UI
+    uniqueID: 1999326999
     locked: 0

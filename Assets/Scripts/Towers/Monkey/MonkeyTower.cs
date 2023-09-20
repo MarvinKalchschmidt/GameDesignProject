@@ -6,33 +6,23 @@ public class MonkeyTower : Tower
 {
     [SerializeField] private Transform _projectileSummonPoint;
     //[SerializeField] private SpriteRenderer _rangeRadiusSpriteRenderer;
-    [SerializeField] public TowerUpgradeHolder _towerUpgradeHolder;
+    [SerializeField] protected float _projectileSpeed;
+
+    public float ProjectileSpeed { get => _projectileSpeed; set => _projectileSpeed = value; }
 
     private float _cooldownTimer;
-    private bool toggleUpgradeButton = false;
 
-    private void Awake()
-    {
-        /*
-        if (_rangeRadiusSpriteRenderer == null)
-        {
-            _rangeRadiusSpriteRenderer = _projectileSummonPoint.GetComponentInChildren<SpriteRenderer>();
-        } */       
-        if (_towerUpgradeHolder == null)
-        {
-            _towerUpgradeHolder = GameObject.FindGameObjectWithTag("TowerUpgradeHolder").GetComponent<TowerUpgradeHolder>();
-        }
-    }
+   
     private void Update()
     {
-        if (_towerIsPlaced && _enemiesWithinRange.Count > 0)
+        if (_towerIsPlaced && _targetDetection.DetectedTargets.Count > 0)
         {
             //Maybe add GameState to only check when Wave is generating
             _cooldownTimer -= Time.deltaTime;
 
             if (_cooldownTimer <= 0f)
             {
-                _cooldownTimer = _cooldown;
+                _cooldownTimer = _cooldown - (_attackSpeed / 10);
                 _animator.SetTrigger("attack");
             }
         }
@@ -40,10 +30,10 @@ public class MonkeyTower : Tower
 
     protected override void Attack()
     {
-        if(_enemiesWithinRange.Count > 0)
+        if(_targetDetection.DetectedTargets.Count > 0)
         {
             Enemy targetEnemy = GetEnemyWithinRadius();
-            ShootBanana(_projectileSummonPoint.transform.position, targetEnemy, _attackSpeed, _damage);
+            ShootBanana(_projectileSummonPoint.transform.position, targetEnemy, _projectileSpeed, _damage);
         }        
     } 
 
@@ -53,14 +43,14 @@ public class MonkeyTower : Tower
         Enemy closestEnemy = null;
         float closestDistanceSqr = Mathf.Infinity;
         Vector3 currentPosition = transform.position;
-        foreach (Enemy potentialTarget in _enemiesWithinRange)
+        foreach (GameObject potentialTarget in _targetDetection.DetectedTargets)
         {
             Vector3 directionToTarget = potentialTarget.transform.position - currentPosition;
             float dSqrToTarget = directionToTarget.sqrMagnitude;
             if (dSqrToTarget < closestDistanceSqr)
             {
                 closestDistanceSqr = dSqrToTarget;
-                closestEnemy = potentialTarget;
+                closestEnemy = potentialTarget.GetComponent<Enemy>();
             }
         }
         return closestEnemy;
@@ -69,37 +59,5 @@ public class MonkeyTower : Tower
     private void ShootBanana(Vector3 bananaSummPosition, Enemy targetEnemy, float speed, float damage)
     {
         ProjectileSpawner.Instance.SummonBanana(bananaSummPosition, targetEnemy.transform.position, targetEnemy, speed, damage);
-    }
-
-    private void OnMouseDown()
-    {
-        /*
-        if (_towerIsPlaced)
-        {
-            if (!toggleUpgradeButton)
-            {
-                //ShowRangeRadius();
-                _towerUpgradeHolder.ShowUpgradesForTower(this, Camera.main.WorldToScreenPoint(transform.position));
-                toggleUpgradeButton = true;
-
-            }
-            else
-            {
-                //HideRangeRadius();
-                _towerUpgradeHolder.HideUpgradesForTower();
-                toggleUpgradeButton = false;
-            }    
-        }*/
-    }
-
-    /*
-    private void ShowRangeRadius()
-    {
-        _rangeRadiusSpriteRenderer.enabled = true;
-    }
-
-    private void HideRangeRadius()
-    {
-        _rangeRadiusSpriteRenderer.enabled = false;
-    }*/   
+    }   
 }

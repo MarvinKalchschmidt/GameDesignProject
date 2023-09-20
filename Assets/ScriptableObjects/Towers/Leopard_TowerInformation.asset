@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Leopard
   _cost: 250
-  _damage: 125
+  _damage: 150
   _attackSpeed: 80
   _description: The Leopard is ready to pounce on enemies at close range. Its lightning-fast
     strikes make short work of foes that dare to approach.

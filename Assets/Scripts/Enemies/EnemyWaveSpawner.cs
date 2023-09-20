@@ -7,11 +7,12 @@ using UnityEngine.Pool;
 public class EnemyWaveSpawner : MonoBehaviour
 {     
     [SerializeField] private EnemyWave[] _enemyWaves;
-    [SerializeField] private float _timeBetweenWaves = 20.0f;
-    [SerializeField] private float _countdown;
+    [SerializeField] private float _initialCountdown;
+    [SerializeField] private float _timeBetweenWaves = 5.0f;
 
     public static event Action<int> OnWaveCompleted;
     public static event Action<int> OnWaveStarting;
+    public static event Action<float> OnDisplayCountdown;
 
     public List<Enemy> enemiesAlive = new List<Enemy>();
     private ObjectPool<Enemy> _enemyPool;  
@@ -21,7 +22,7 @@ public class EnemyWaveSpawner : MonoBehaviour
 
     private void Start()
     {  
-        _enemyPool = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 200);       
+        _enemyPool = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 500);       
     }
 
     public int WaveIndex
@@ -35,16 +36,21 @@ public class EnemyWaveSpawner : MonoBehaviour
         get => _enemyWaves.Length;       
     }
 
+    public void StartTutorialEnemySpawning()
+    {
+        StartCoroutine(RunTutorialWave());
+    }
+
     public void StartEnemySpawning()
     {
-        //_countdown = _timeBetweenWaves;
         StartCoroutine(RunSpawner());
     }
 
     private Enemy CreateEnemyPoolObject()
     {
         EnemyWave currentWave = _enemyWaves[_currentWaveIndex];
-        Enemy enemy = Instantiate(currentWave.GetEnemyPrefabs[UnityEngine.Random.Range(0, currentWave.GetEnemyPrefabs.Length)]);
+        Enemy[] enemyPrefabs = currentWave.GetEnemyPrefabs;
+        Enemy enemy = Instantiate(enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)]);
         enemy.DestroyEnemy += ReleaseEnemyToPool;
         enemy.gameObject.SetActive(false);
         return enemy;
@@ -75,12 +81,13 @@ public class EnemyWaveSpawner : MonoBehaviour
     }
 
     private IEnumerator RunSpawner()
-    {        
-        yield return new WaitForSeconds(_countdown);
-        while(_spawnEnemies && _currentWaveIndex < MaxWaveCount)
+    {   
+        yield return Countdown(_initialCountdown);
+        
+        while (_spawnEnemies && _currentWaveIndex < MaxWaveCount)
         {
-            //sends +1 because of zero-based array indexing for UI
-            OnWaveStarting?.Invoke(_currentWaveIndex + 1);
+            //used to send +1 because of zero-based array indexing for UI
+            OnWaveStarting?.Invoke(_currentWaveIndex);
 
             yield return SpawnEnemyWave(_enemyWaves[_currentWaveIndex]);
            
@@ -88,9 +95,30 @@ public class EnemyWaveSpawner : MonoBehaviour
             _currentWaveIndex++;
             OnWaveCompleted?.Invoke(_currentWaveIndex);
 
-            yield return new WaitForSeconds(_timeBetweenWaves);
+            yield return Countdown(_timeBetweenWaves);
         }
-    }   
+    }
+
+    private IEnumerator RunTutorialWave()
+    {
+        if (_spawnEnemies)
+        {
+            OnWaveStarting?.Invoke(_currentWaveIndex);
+
+            yield return SpawnEnemyWave(_enemyWaves[_currentWaveIndex]);
+
+            yield return new WaitWhile(AllEnemiesDefeated);
+            _currentWaveIndex++;
+        }
+    }
+
+    private IEnumerator Countdown(float countdowntime)
+    {
+        Debug.Log("Starting Countdown");        
+        OnDisplayCountdown.Invoke(countdowntime);
+        //+ 1.5f to match UI Coutdown Time
+        yield return new WaitForSeconds(countdowntime + 1.5f);
+    }    
 
     private IEnumerator SpawnEnemyWave(EnemyWave currentWave)
     {
@@ -100,7 +128,6 @@ public class EnemyWaveSpawner : MonoBehaviour
             _enemyPool.Get();
             yield return new WaitForSeconds(currentWave.SpawnRate);
         }
-        //_countdown = _timeBetweenWaves;
     }
 
     private void InitEnemy(Enemy enemy)

@@ -10,7 +10,7 @@ public class TowerUpgradeHolder : MonoBehaviour
     [SerializeField] private Tooltip _tooltip;
     [SerializeField] private Vector3 _offset;
 
-    private void Awake()
+    private void Start()
     {
         _upgradeButtonHolder.SetActive(false);
     }

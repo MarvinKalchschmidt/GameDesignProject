@@ -13,9 +13,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int _killReward;
     [SerializeField] private float _speed = 1f;
     [SerializeField] private Vector2 _direction = Vector2.left;
-    [SerializeField] private BoxCollider2D _boxCollider;
-    
-    [SerializeField] private LayerMask _treeOfLifeLayer;
+    [SerializeField] protected TargetDetectionUtil _targetDetection;
 
     private Rigidbody2D _rigidbody;    
     private Vector2 _velocity;
@@ -35,8 +33,9 @@ public class Enemy : MonoBehaviour
 
     private void Awake() {
         _rigidbody = GetComponent<Rigidbody2D>();
-        if(_boxCollider == null) {
-            _boxCollider = GetComponent<BoxCollider2D>();
+        if (_targetDetection == null)
+        {
+            _targetDetection = GetComponent<TargetDetectionUtil>();
         }
         if (_animator == null)
         {
@@ -91,22 +90,31 @@ public class Enemy : MonoBehaviour
         _alive = false;
         DestroyEnemy?.Invoke(this);
     }
-
     private bool CheckForTarget()
     {
-        RaycastHit2D hit = Physics2D.BoxCast(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size, 0, Vector2.left, 0, _treeOfLifeLayer);
-        if(hit.collider != null)
+        if (_targetDetection.DetectedTargets.Count > 0)
         {
-            _treeOfLife = hit.transform.GetComponent<TreeOfLife>();
+            _treeOfLife = _targetDetection.DetectedTargets[0].GetComponent<TreeOfLife>();
+            return true;
         }
-        return (hit.collider != null);
+        return false;
     }
+        /*
+        private bool CheckForTarget()
+        {
+            RaycastHit2D hit = Physics2D.BoxCast(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size, 0, Vector2.left, 0, _treeOfLifeLayer);
+            if(hit.collider != null)
+            {
+                _treeOfLife = hit.transform.GetComponent<TreeOfLife>();
+            }
+            return (hit.collider != null);
+        }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size);
-    }
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size);
+        }*/
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -123,5 +131,4 @@ public class Enemy : MonoBehaviour
             _treeOfLife.TakeDamage(_damage);
         }
     }
-
 }

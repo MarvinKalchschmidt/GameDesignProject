@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d41665906bccfa4da511c90fa740b1f, type: 3}
   m_Name: FifthWave
   m_EditorClassIdentifier: 
-  _waveName: Final Wave
+  _waveName: Fifth Wave
   _spawnRate: 1
   _amountOfEnemies: 30
   _enemyPrefabs:
@@ -27,3 +27,4 @@ MonoBehaviour:
   - {fileID: 6256214586705541779, guid: d66a0f20b832fce4ebdfdf18675b43d1, type: 3}
   - {fileID: 6256214586705541779, guid: d66a0f20b832fce4ebdfdf18675b43d1, type: 3}
   - {fileID: 6256214586705541779, guid: d66a0f20b832fce4ebdfdf18675b43d1, type: 3}
+  _waveClearReward: 5

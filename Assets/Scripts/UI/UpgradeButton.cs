@@ -23,14 +23,7 @@ public class UpgradeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         if (CanAffordUpgrade(towerUpgrade))
         {
-            if (_towerUpgrade.UpgradeType == UpgradeType.Damage)
-            {
-                Tower.Damage += _towerUpgrade.UpgradeAmount;
-            }
-            else if (_towerUpgrade.UpgradeType == UpgradeType.Speed)
-            {
-                Tower.AttackSpeed += _towerUpgrade.UpgradeAmount;
-            }
+            Tower.UpgradeTower(towerUpgrade);
         } 
         else
         {
@@ -47,7 +40,6 @@ public class UpgradeButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Klick");
         OnButtonBuyUpgrade(_towerUpgrade);
     }
 

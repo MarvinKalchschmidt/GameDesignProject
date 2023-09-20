@@ -279,6 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73aff88d8164fdf4ab424b692f5a1019, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _canvasGroup: {fileID: 890445534}
   _duration: 0.4
   _fadePause: 30
 --- !u!114 &890445531

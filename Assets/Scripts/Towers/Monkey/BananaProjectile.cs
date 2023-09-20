@@ -28,7 +28,7 @@ public class BananaProjectile : MonoBehaviour
         this._summonPos = summonPos;
         this._targetPos = targetPos;
         this._targetEnemy = targetEnemy;
-        //this._bananaSpeed = bananaSpeed;
+        this._bananaSpeed = bananaSpeed;
         this._bananaDamage = bananaDamage;
         transform.position = summonPos;
         startTime = Time.time;
@@ -39,7 +39,12 @@ public class BananaProjectile : MonoBehaviour
     {
         transform.Rotate(Vector3.forward * 20f);
 
-       
+        if(_targetEnemy == null || _targetEnemy.gameObject.activeSelf == false)
+        {
+            DestroySelf();
+            return;
+        }
+
         if ((_projectileState == ProjectileState.Throwing && Vector3.Distance(transform.position, _targetPos) > 0.1f) ||
             (_projectileState == ProjectileState.Returning && Vector3.Distance(transform.position, _summonPos) > 0.1f))
         {
@@ -65,8 +70,7 @@ public class BananaProjectile : MonoBehaviour
 
         Vector3 startRelCenter = startPos - center;
         Vector3 endRelCenter = endPos - center;
-
-        transform.position = Vector3.Slerp(startRelCenter, endRelCenter, Time.time - startTime * 1f) + center;
+        transform.position = Vector3.Slerp(startRelCenter, endRelCenter, Mathf.Clamp01((Time.time - startTime) * _bananaSpeed)) + center;
     }    
 
     /*

@@ -14,7 +14,7 @@ public class Cutscene : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(RunSpawner());
+        StartCoroutine(FadeInButton());
         PreloadGame();
     }
 
@@ -28,10 +28,10 @@ public class Cutscene : MonoBehaviour
         _videoPlayer.loopPointReached -= VideoFinished;
     }
 
-    private IEnumerator RunSpawner()
+    private IEnumerator FadeInButton()
     {
         yield return new WaitForSeconds(5);
-        _button.GetComponent<FadeComponent>().Fade();
+        _button.GetComponent<FadeComponent>().FadeIn();
     }
 
     private void VideoFinished(VideoPlayer vp)

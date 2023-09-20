@@ -5,11 +5,8 @@ using UnityEngine;
 public class LeopardTower : Tower
 {
     [SerializeField] private LayerMask _enemyLayer;
-    [SerializeField] private TowerUpgradeHolder _towerUpgradeHolder;
 
-    private bool toggleUpgradeButton = false;
     private float _cooldownTimer;
-
     private Enemy _currentEnemy;
 
     private void Awake() 
@@ -22,13 +19,13 @@ public class LeopardTower : Tower
 
     private void Update()
     {
-        if (_towerIsPlaced && _enemiesWithinRange.Count > 0)
+        if (_towerIsPlaced && _targetDetection.DetectedTargets.Count > 0)
         {
             _cooldownTimer -= Time.deltaTime;
 
             if (_cooldownTimer <= 0f)
             {
-                _cooldownTimer = _cooldown;
+                _cooldownTimer = _cooldown - (_attackSpeed / 10);
                 _animator.SetTrigger("attack");
             }
         }
@@ -52,29 +49,6 @@ public class LeopardTower : Tower
             _currentEnemy.TakeDamage(_damage);
         }
     }
-
-    private void OnMouseDown()
-    {
-        if (_towerIsPlaced)
-        {
-            if (!toggleUpgradeButton)
-            {
-                //ShowRangeRadius();
-                Debug.Log("Click on Tower");
-                _towerUpgradeHolder.ShowUpgradesForTower(this, Camera.main.WorldToScreenPoint(transform.position));
-                toggleUpgradeButton = true;
-
-            }
-            else
-            {
-                //HideRangeRadius();
-                Debug.Log("Mouse off Tower");
-                _towerUpgradeHolder.HideUpgradesForTower();
-                toggleUpgradeButton = false;
-            }
-        }
-    }
-
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
