@@ -18,8 +18,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private int _money;
     [SerializeField] private int _waveCount;
     [SerializeField] private int _startMoney;
-    [SerializeField] private static bool _skipTutorial;
-    [SerializeField] private static GameOverState _gameOverState;
+    [SerializeField] private bool _skipTutorialBool;
+    private static bool _skipTutorial;
+    private static GameOverState _gameOverState;
 
     /**UI**/
     [SerializeField] private TMP_Text _moneyCountText;
@@ -52,7 +53,7 @@ public class GameManager : Singleton<GameManager>
             _money = _startMoney;
             UpdateMoneyCount();
 
-            if (_skipTutorial)
+            if (_skipTutorial || _skipTutorialBool)
             {
                 SkipTutorialFunction();
             }           
@@ -155,7 +156,7 @@ public class GameManager : Singleton<GameManager>
     private void UpdateWaveCount(int currentWaveIndex, int maxWaves)
     {
         _wavesCountText.SetText($"Wave: {currentWaveIndex}/{maxWaves-1}");
-        if (currentWaveIndex == maxWaves)
+        if (currentWaveIndex == maxWaves-1)
         {
             PreloadEndScene();
         }
@@ -216,6 +217,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (currentWaveIndex == _enemyWaveSpawner.MaxWaveCount)
         {
+            Debug.Log("Check");
             GameOver(GameOverState.Win);
         }
     }  

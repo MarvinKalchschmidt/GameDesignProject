@@ -14,7 +14,7 @@ public class TutorialManager : Singleton<TutorialManager>
     [SerializeField] private TutorialStep[] _tutorialSteps = new TutorialStep[]
         {
             new TutorialStep("Help! The humans are trying to destroy the Tree of Life! Protect the Tree of Life and survive all waves!", null, 6f),
-            new TutorialStep("Quickly, place a tower near the Tree of Life to defend it! It can only be placed in the green areas!", () => towerPlaced, 0f, new Vector3(0, -300), Quaternion.identity),
+            new TutorialStep("Quickly, place a tower near the Tree of Life to defend it! It can only be placed in the green areas!", () => towerPlaced, 0f, new Vector3(-150, -300), Quaternion.identity),
             new TutorialStep("By defeating enemies and get more Bananas! You can use them to buy and upgrade more towers!", () => enemyDefeated , 0f, new Vector3(-800, 350), Quaternion.Euler(0, 0, 180)),
             new TutorialStep("You can move left and right using A and D or your arrow keys!", () => Input.GetAxis("Horizontal") > 0f, 0f),
             new TutorialStep("You can upgrade your towers to make them stronger and faster buy clicking on them! Click on your tower!", () => towerClicked, 0f),

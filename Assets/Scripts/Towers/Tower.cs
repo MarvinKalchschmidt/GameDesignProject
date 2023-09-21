@@ -90,7 +90,6 @@ public abstract class Tower : MonoBehaviour
             if (!toggleUpgradeButton)
             {
                 //ShowRangeRadius();
-                Debug.Log("Click on Tower");
                 _towerUpgradeHolder.ShowUpgradesForTower(this, transform.position);
                 toggleUpgradeButton = true;
 
@@ -98,12 +97,11 @@ public abstract class Tower : MonoBehaviour
             else
             {
                 //HideRangeRadius();
-                Debug.Log("Mouse off Tower");
                 _towerUpgradeHolder.HideUpgradesForTower();
                 toggleUpgradeButton = false;
             }
         }
-    }
+    }  
 
     public void UpgradeTower(TowerUpgrade towerUpgrade)
     {

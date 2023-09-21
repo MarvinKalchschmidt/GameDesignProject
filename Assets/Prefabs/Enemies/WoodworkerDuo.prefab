@@ -101,16 +101,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0595c7e3fef6bd4eb00acbe5c542ca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  __enemyType: 0
   _maxHealth: 150
   _currentHealth: 0
   _damage: 100
   _attackCooldown: 3
-  _killReward: 50
+  _killReward: 25
   _speed: 5
   _direction: {x: -1, y: 0}
   _targetDetection: {fileID: 1530069219504355463}
-  _cooldownTimer: Infinity
-  _invulnerabilityTime: 1.5
+  _immunityTime: 1.5
+  _isImmune: 0
 --- !u!50 &1132820422
 Rigidbody2D:
   serializedVersion: 4

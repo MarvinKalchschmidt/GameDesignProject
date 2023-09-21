@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class Enemy : MonoBehaviour
 {
+    [SerializeField] private EnemyType __enemyType;
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _currentHealth;
     [SerializeField] private int _damage;
@@ -29,10 +30,11 @@ public class Enemy : MonoBehaviour
 
     private bool _alive;
     private float _cooldownTimer = Mathf.Infinity;
-    private float _immunityTimer = 1.5f;
+    private float _immunityTimer = 0.5f;
 
     public int DamageDealt { get => _damage; set => _damage = value; }
     public int KillReward { get => _killReward; set => _killReward = value; }
+    public EnemyType EnemyType { get => __enemyType; set => __enemyType = value; }
 
     private void Awake() {
         _rigidbody = GetComponent<Rigidbody2D>();
@@ -87,7 +89,6 @@ public class Enemy : MonoBehaviour
     {
         _currentHealth = _maxHealth;
         _treeOfLife = null;
-        _targetDetection.DetectedTargets = new List<GameObject>();
         _alive = true;
     }
 
@@ -133,15 +134,12 @@ public class Enemy : MonoBehaviour
 
         if (other.CompareTag("Tower") && other.gameObject.TryGetComponent(out ToukanTower toukanTower))
         {
-            Debug.Log("Check");
             if(toukanTower.ToukanState != ToukanState.Idling)
             {
                 TakeDamage(toukanTower.Damage);
             }
         }
-    }
-
-   
+    }      
   
     public void DoDamage()
     {
@@ -150,4 +148,11 @@ public class Enemy : MonoBehaviour
             _treeOfLife.TakeDamage(_damage);
         }
     }
+}
+
+public enum EnemyType
+{
+    Duo = 0,
+    Chainsaw = 1,
+    Excavator = 2
 }

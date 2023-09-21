@@ -19,16 +19,18 @@ public class Healthbar : MonoBehaviour{
     void OnEnable()
     {
         TreeOfLife.OnDamageTaken += SetHealthbar;
+        HealFruit.OnHealFruitClicked += SetHealthbar;
     }
 
 
     void OnDisable()
     {
         TreeOfLife.OnDamageTaken -= SetHealthbar;
+        HealFruit.OnHealFruitClicked += SetHealthbar;
     }
 
-    public void SetHealthbar(float health)
+    public void SetHealthbar(float test)
     {
-        _slider.value = health;
+        _slider.value = _treeOfLife.CurrentHealth;
     }
 }

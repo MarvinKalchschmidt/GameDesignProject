@@ -15,7 +15,7 @@ MonoBehaviour:
   _name: Leopard
   _cost: 400
   _damage: 200
-  _attackSpeed: 80
+  _attackSpeed: 60
   _description: The Leopard is ready to pounce on enemies at close range. Its lightning-fast
     strikes make short work of foes that dare to approach.
   _towerPrefab: {fileID: 3296022494773617819, guid: d5e3879ead3b33b41b753156d650c06f, type: 3}

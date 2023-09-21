@@ -16,13 +16,20 @@ public class EnemyWaveSpawner : MonoBehaviour
     public static event Action<string, float> OnDisplayCountdown;
 
     public List<Enemy> enemiesAlive = new List<Enemy>();
-    private ObjectPool<Enemy> _enemyPool;
+    //private ObjectPool<Enemy> _enemyPool;
+    private ObjectPool<Enemy> _enemyPoolDuo;
+    private ObjectPool<Enemy> _enemyPoolChainsaw;
+    private ObjectPool<Enemy> _enemyPoolExcavator;
     public bool _spawnEnemies = true;
+    public int _enemyPrefabListIndex;
 
 
     private void Start()
     {  
-        _enemyPool = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 500);       
+        //_enemyPool = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 500);       
+        _enemyPoolDuo = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 100);       
+        _enemyPoolChainsaw = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 100);       
+        _enemyPoolExcavator = new ObjectPool<Enemy>(CreateEnemyPoolObject, OnTakeEnemyFromPool, OnReturnEnemyToPool, OnDestroyEnemy, false, 50, 100);       
     }
 
     public int WaveIndex
@@ -50,7 +57,7 @@ public class EnemyWaveSpawner : MonoBehaviour
     {
         EnemyWave currentWave = _enemyWaves[_currentWaveIndex];
         Enemy[] enemyPrefabs = currentWave.GetEnemyPrefabs;
-        Enemy enemy = Instantiate(enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)]);
+        Enemy enemy = Instantiate(enemyPrefabs[_enemyPrefabListIndex]);
         enemy.DestroyEnemy += ReleaseEnemyToPool;
         enemy.gameObject.SetActive(false);
         return enemy;
@@ -60,24 +67,30 @@ public class EnemyWaveSpawner : MonoBehaviour
     {
         enemy.gameObject.SetActive(true);
         InitEnemy(enemy);
-        enemiesAlive.Add(enemy);
+        enemiesAlive.Add(enemy);               
     }
 
     private void OnReturnEnemyToPool(Enemy enemy)
     {
         enemy.gameObject.SetActive(false);
+    }    
+
+    private void ReleaseEnemyToPool(Enemy enemy)
+    {
+        enemiesAlive.Remove(enemy);
+        //_enemyPool.Release(enemy);
+        switch (enemy.EnemyType)
+        {
+            case EnemyType.Duo: _enemyPoolDuo.Release(enemy); break;
+            case EnemyType.Chainsaw: _enemyPoolChainsaw.Release(enemy); break;
+            case EnemyType.Excavator: _enemyPoolExcavator.Release(enemy); break;
+        }
     }
 
     private void OnDestroyEnemy(Enemy enemy)
     {
         enemiesAlive.Remove(enemy);
         Destroy(enemy.gameObject);
-    }
-
-    private void ReleaseEnemyToPool(Enemy enemy)
-    {
-        enemiesAlive.Remove(enemy);
-        _enemyPool.Release(enemy);
     }
 
     private IEnumerator RunSpawner()
@@ -95,7 +108,10 @@ public class EnemyWaveSpawner : MonoBehaviour
             _currentWaveIndex++;
             OnWaveCompleted?.Invoke(_currentWaveIndex);
 
-            yield return Countdown(_enemyWaves[_currentWaveIndex].WaveName, _timeBetweenWaves);
+            if(_currentWaveIndex < MaxWaveCount)
+            {
+                yield return Countdown(_enemyWaves[_currentWaveIndex].WaveName, _timeBetweenWaves);
+            }
         }
     }
 
@@ -122,10 +138,18 @@ public class EnemyWaveSpawner : MonoBehaviour
 
     private IEnumerator SpawnEnemyWave(EnemyWave currentWave)
     {
+        _enemyPrefabListIndex = 0;
         Debug.Log($"{currentWave.WaveName} Incoming...");
-        for(int i = 0; i < currentWave.AmountOfEnemies; i++)
+        for(int i = 0; i < currentWave.GetEnemyPrefabs.Length; i++)
         {
-            _enemyPool.Get();
+            //_enemyPool.Get(); switch (enemy.EnemyType)
+            switch (currentWave.GetEnemyPrefabs[i].EnemyType)
+            {
+                case EnemyType.Duo: _enemyPoolDuo.Get(); break;
+                case EnemyType.Chainsaw: _enemyPoolChainsaw.Get(); break;
+                case EnemyType.Excavator: _enemyPoolExcavator.Get(); break;
+            }
+            _enemyPrefabListIndex++;
             yield return new WaitForSeconds(currentWave.SpawnRate);
         }
     }

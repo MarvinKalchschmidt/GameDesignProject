@@ -81,7 +81,7 @@ public class EndSceneManager : MonoBehaviour
 
             if (_asyncOperation.progress >= 0.9f)
             {
-                _loadingText.text = "Loading of Djungle Defenders completed.";
+                _loadingText.text = "Loading of Guardians of the Rainforest completed.";
             }
 
             yield return null;

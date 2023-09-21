@@ -29,7 +29,7 @@ public class TargetDetectionUtil : MonoBehaviour
     public bool _showGizmos = true;
     public bool _checkForLineOfSight = false;
 
-    private void Start()
+    private void OnEnable()
     {
         _detectedTargets = new List<GameObject>();
         StartCoroutine(TargetDetectionCouroutine());
