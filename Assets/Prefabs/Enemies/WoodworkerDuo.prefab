@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 1640010211359711614}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
+  m_LocalScale: {x: 2.3, y: 2.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8093850992263751443}
@@ -78,12 +78,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 179483976454acd4b868bbe97222be97, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5d3b1444900335446b6039704bed1c98, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 9.89, y: 6.11}
+  m_Size: {x: 2.56, y: 1.93}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -101,14 +101,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0595c7e3fef6bd4eb00acbe5c542ca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 200
+  _maxHealth: 150
   _currentHealth: 0
   _damage: 100
   _attackCooldown: 3
-  _killReward: 200
+  _killReward: 50
   _speed: 5
   _direction: {x: -1, y: 0}
   _targetDetection: {fileID: 1530069219504355463}
+  _cooldownTimer: Infinity
+  _invulnerabilityTime: 1.5
 --- !u!50 &1132820422
 Rigidbody2D:
   serializedVersion: 4
@@ -147,14 +149,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 14.62, y: 11.01}
-    newSize: {x: 9.89, y: 6.11}
+    oldSize: {x: 2.56, y: 1.93}
+    newSize: {x: 2.56, y: 1.93}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 7, y: 11}
+  m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
 --- !u!95 &7579185420494146767
 Animator:
@@ -228,7 +230,7 @@ MonoBehaviour:
   _detectionType: 0
   _detectionOffset: {x: 0, y: 0, z: 0}
   _radius: 10
-  _detectionSize: {x: 4, y: 5}
+  _detectionSize: {x: 4, y: 4}
   _detectedTargets: []
   _showGizmos: 1
   _checkForLineOfSight: 0

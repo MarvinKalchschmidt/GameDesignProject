@@ -13,11 +13,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int _killReward;
     [SerializeField] private float _speed = 1f;
     [SerializeField] private Vector2 _direction = Vector2.left;
-    [SerializeField] protected TargetDetectionUtil _targetDetection;
+    [SerializeField] private TargetDetectionUtil _targetDetection;
+    [SerializeField] private float _immunityTime = 1.5f;
+    [SerializeField] private bool _isImmune = false;
 
     private Rigidbody2D _rigidbody;    
     private Vector2 _velocity;
-    private float _cooldownTimer = Mathf.Infinity;
     private Animator _animator;
     private TreeOfLife _treeOfLife;
 
@@ -27,6 +28,8 @@ public class Enemy : MonoBehaviour
     public OnDestroyEnemy DestroyEnemy;
 
     private bool _alive;
+    private float _cooldownTimer = Mathf.Infinity;
+    private float _immunityTimer = 1.5f;
 
     public int DamageDealt { get => _damage; set => _damage = value; }
     public int KillReward { get => _killReward; set => _killReward = value; }
@@ -52,6 +55,7 @@ public class Enemy : MonoBehaviour
         _rigidbody.velocity = Vector2.zero;
         _rigidbody.Sleep();
     }
+   
 
     private void FixedUpdate() {
         _velocity.x = _direction.x * _speed;
@@ -67,29 +71,49 @@ public class Enemy : MonoBehaviour
                 _animator.SetTrigger("attack");
             }
         }
+
+        if (_isImmune)
+        {
+            _immunityTimer -= Time.deltaTime;
+
+            if (_immunityTimer <= 0f)
+            {
+                _isImmune = false;
+            }
+        }
     }
 
     private void InitEnemy()
     {
         _currentHealth = _maxHealth;
+        _treeOfLife = null;
+        _targetDetection.DetectedTargets = new List<GameObject>();
         _alive = true;
     }
 
     public void TakeDamage(float damageToTake)
     {
-        _currentHealth -= damageToTake;
-        if(_currentHealth <= 0 && _alive)
+        if (!_isImmune)
+        {
+            _currentHealth -= damageToTake;
+            _isImmune = true;
+            _immunityTimer = _immunityTime;
+        }
+
+        if (_currentHealth <= 0 && _alive)
         {            
             OnEnemyDiesFromDamage?.Invoke(this.KillReward);
             DestroySelf();           
         }
-    }
+    }    
 
     public void DestroySelf()
     {
         _alive = false;
+        Physics2D.IgnoreLayerCollision(6, 7, false);
         DestroyEnemy?.Invoke(this);
     }
+
     private bool CheckForTarget()
     {
         if (_targetDetection.DetectedTargets.Count > 0)
@@ -98,23 +122,7 @@ public class Enemy : MonoBehaviour
             return true;
         }
         return false;
-    }
-        /*
-        private bool CheckForTarget()
-        {
-            RaycastHit2D hit = Physics2D.BoxCast(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size, 0, Vector2.left, 0, _treeOfLifeLayer);
-            if(hit.collider != null)
-            {
-                _treeOfLife = hit.transform.GetComponent<TreeOfLife>();
-            }
-            return (hit.collider != null);
-        }
-
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(_boxCollider.bounds.center + transform.right * transform.localScale.x, _boxCollider.bounds.size);
-        }*/
+    }       
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -122,7 +130,18 @@ public class Enemy : MonoBehaviour
         {
             TakeDamage(other.gameObject.GetComponent<BananaProjectile>().BananaDamage);
         }
+
+        if (other.CompareTag("Tower") && other.gameObject.TryGetComponent(out ToukanTower toukanTower))
+        {
+            Debug.Log("Check");
+            if(toukanTower.ToukanState != ToukanState.Idling)
+            {
+                TakeDamage(toukanTower.Damage);
+            }
+        }
     }
+
+   
   
     public void DoDamage()
     {

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _waveName: Second Wave
   _spawnRate: 2.5
-  _amountOfEnemies: 20
+  _amountOfEnemies: 15
   _enemyPrefabs:
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
@@ -24,11 +24,6 @@ MonoBehaviour:
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
-  - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
-  - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
-  - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
-  - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
-  - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
   - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
   - {fileID: 6256214586705541779, guid: 665430441dbaf5642980c67a25b0db27, type: 3}
   _waveClearReward: 2

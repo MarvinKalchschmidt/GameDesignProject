@@ -13,6 +13,8 @@ public class ToukanTower : Tower
     private Vector3 _summonPos;
     private Vector3 _targetPos;
 
+    public ToukanState ToukanState { get => _toukanState; }
+
     private Enemy _currentEnemy;
     public float duration = 1.0f;
     private float elapsedTime = 0.0f;
@@ -28,7 +30,6 @@ public class ToukanTower : Tower
             {
                 _cooldownTimer = _cooldown - (_attackSpeed / 10);
                 _animator.SetTrigger("attack");
-                Attack();
             }
         }
     }
@@ -83,7 +84,7 @@ public class ToukanTower : Tower
 
     private bool EnemyInSight()
     {
-        RaycastHit2D hit = Physics2D.CircleCast(_circleCollider.bounds.center, _circleCollider.radius, Vector2.right, 0, _enemyLayer);
+        RaycastHit2D hit = Physics2D.CircleCast(_circleCollider.bounds.center, _circleCollider.radius * 2.3f, Vector2.right, 0, _enemyLayer);
 
         if (hit.collider != null)
         {
@@ -95,16 +96,17 @@ public class ToukanTower : Tower
     protected override void Attack()
     {
         _toukanState = ToukanState.Diving;
-        if (EnemyInSight())
+        /*if (EnemyInSight())
         {
+            Debug.Log("Enemy in sight");
             _currentEnemy.TakeDamage(_damage);
-        }
+        }*/
     }  
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_circleCollider.bounds.center, _circleCollider.radius * 0.3f);
+        Gizmos.DrawWireSphere(_circleCollider.bounds.center, _circleCollider.radius * 2.3f);
     }
 }
 

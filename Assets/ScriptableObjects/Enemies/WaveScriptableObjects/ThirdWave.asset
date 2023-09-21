@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _waveName: Third Wave
   _spawnRate: 2
-  _amountOfEnemies: 30
+  _amountOfEnemies: 20
   _enemyPrefabs:
+  - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}
   - {fileID: 6256214586705541779, guid: 501e325cac0ed9d44ac504862572361b, type: 3}

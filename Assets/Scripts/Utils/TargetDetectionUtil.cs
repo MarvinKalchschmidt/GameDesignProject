@@ -9,10 +9,11 @@ public class TargetDetectionUtil : MonoBehaviour
     [SerializeField] private DetectionType _detectionType;
     //Event?
     [SerializeField] private Vector3 _detectionOffset;
-    [Range(0.1f, 20f)]
+    [Range(0.1f, 100f)]
     [SerializeField] private float _radius;
     [SerializeField] private Vector2 _detectionSize;
     [SerializeField] private List<GameObject> _detectedTargets;
+
 
     private bool _detectedTargetInLineOfSight;
     public List<GameObject> DetectedTargets { 
@@ -27,7 +28,6 @@ public class TargetDetectionUtil : MonoBehaviour
 
     public bool _showGizmos = true;
     public bool _checkForLineOfSight = false;
-    private bool isDetecting = false;
 
     private void Start()
     {
@@ -61,38 +61,7 @@ public class TargetDetectionUtil : MonoBehaviour
         yield return new WaitForSeconds(_detectionDelay);
         PerformTargetDetection(_detectionType);
         StartCoroutine(TargetDetectionCouroutine());
-    }
-
-    /*
-    private void PerformTargetDetection(DetectionType detectionType)
-    {
-        List<GameObject> newDetectedTargets = new List<GameObject>();
-
-        Collider2D[] colliders = detectionType == DetectionType.Box2D ? 
-            Physics2D.OverlapBoxAll(transform.position, _detectionSize, 0, _targetLayer) : 
-            Physics2D.OverlapCircleAll(transform.position, _radius, _targetLayer);
-
-        foreach (Collider2D collider in colliders)
-        {
-            GameObject foundTarget = collider.gameObject;
-
-            if (!TargetAlreadyDetected(foundTarget))
-            {
-                Debug.Log("Enemy Found");
-                DetectedTargets.Add(foundTarget);
-                newDetectedTargets.Add(foundTarget); // Store newly detected targets in a separate list.
-            }
-        }
-
-        foreach (GameObject target in DetectedTargets)
-        {
-            if (!newDetectedTargets.Contains(target))
-            {
-                Debug.Log("Enemy Lost");
-                DetectedTargets.Remove(target);
-            }
-        }
-    }*/
+    }   
 
     private void PerformTargetDetection(DetectionType detectionType)
     {
@@ -112,8 +81,6 @@ public class TargetDetectionUtil : MonoBehaviour
         }
         DetectedTargets = detectedTargets;
     }
-
-
 
     private void OnDrawGizmos()
     {

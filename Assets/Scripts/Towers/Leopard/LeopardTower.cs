@@ -33,7 +33,7 @@ public class LeopardTower : Tower
 
     private bool EnemyInSight()
     {
-        RaycastHit2D hit = Physics2D.CircleCast(_circleCollider.bounds.center, _circleCollider.radius, Vector2.right, 0, _enemyLayer);
+        RaycastHit2D hit = Physics2D.CircleCast(_circleCollider.bounds.center, _circleCollider.radius * 2.3f, Vector2.right, 0, _enemyLayer);
 
         if(hit.collider != null)
         {
@@ -52,6 +52,6 @@ public class LeopardTower : Tower
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(_circleCollider.bounds.center, _circleCollider.radius*0.3f);
+        Gizmos.DrawWireSphere(_circleCollider.bounds.center, _circleCollider.radius * 2.3f);
     }
 }

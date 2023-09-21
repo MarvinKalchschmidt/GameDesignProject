@@ -59,5 +59,12 @@ public class MonkeyTower : Tower
     private void ShootBanana(Vector3 bananaSummPosition, Enemy targetEnemy, float speed, float damage)
     {
         ProjectileSpawner.Instance.SummonBanana(bananaSummPosition, targetEnemy.transform.position, targetEnemy, speed, damage);
-    }   
+    }
+
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(_circleCollider.bounds.center, _circleCollider.radius * 2.3f);
+    }
 }

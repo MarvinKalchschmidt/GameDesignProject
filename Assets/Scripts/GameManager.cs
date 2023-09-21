@@ -8,15 +8,18 @@ public class GameManager : Singleton<GameManager>
 {
     [SerializeField] private EnemyWaveSpawner _enemyWaveSpawner;
     [SerializeField] private TowerPlacementManager _towerPlacementManager;
+    [SerializeField] private TutorialManager _tutorialManager;
     [SerializeField] private TreeOfLife _treeOFLife;
     [SerializeField] private Camera _camera;
+    [SerializeField] private CameraMovement _cameraMovement;
     [SerializeField] private bool _controllsEnabled;    
     
     /**Game Logic**/
     [SerializeField] private int _money;
     [SerializeField] private int _waveCount;
     [SerializeField] private int _startMoney;
-    private static GameOverState _gameOverState;
+    [SerializeField] private static bool _skipTutorial;
+    [SerializeField] private static GameOverState _gameOverState;
 
     /**UI**/
     [SerializeField] private TMP_Text _moneyCountText;
@@ -27,8 +30,9 @@ public class GameManager : Singleton<GameManager>
     private AsyncOperation _asyncOperation;
 
     public int Money { get => _money; set { _money = value; UpdateMoneyCount(); } }
-    public int WaveCount { get => _waveCount; set { _waveCount = value; _enemyWaveSpawner.WaveIndex = value; UpdateWaveCount(_waveCount, 5); } }
+    public int WaveCount { get => _waveCount; set { _waveCount = value; UpdateWaveCount(_waveCount, _enemyWaveSpawner.MaxWaveCount); } }
     public bool ControllsEnabled { get => _controllsEnabled; set { _controllsEnabled = value; } }
+    public static bool SkipTutorial  { get => _skipTutorial; set { _skipTutorial = value; } }
     public static GameOverState GameOverState { get => _gameOverState; set { _gameOverState = value; } }
 
 
@@ -47,6 +51,11 @@ public class GameManager : Singleton<GameManager>
             }
             _money = _startMoney;
             UpdateMoneyCount();
+
+            if (_skipTutorial)
+            {
+                SkipTutorialFunction();
+            }           
         }
     }
 
@@ -67,7 +76,7 @@ public class GameManager : Singleton<GameManager>
         UpgradeButton.OnDisplayMessage += DisplayMessage;
         HealFruit.OnHealFruitClicked += HealTreeOfLife;
         CameraMovement.OnAnimationFinished += EnableControlls;
-        TutorialManager.OnTutorialStart += StartTutorialWave;
+        TutorialManager.OnTutorialStart += StartTutorial;
         TutorialManager.OnTutorialCompleted += StartWaveSpawner;
         SceneManager.sceneLoaded += Init;
     }
@@ -89,7 +98,7 @@ public class GameManager : Singleton<GameManager>
         UpgradeButton.OnDisplayMessage -= DisplayMessage;
         HealFruit.OnHealFruitClicked -= HealTreeOfLife;
         CameraMovement.OnAnimationFinished -= EnableControlls;
-        TutorialManager.OnTutorialStart -= StartTutorialWave;
+        TutorialManager.OnTutorialStart -= StartTutorial;
         TutorialManager.OnTutorialCompleted -= StartWaveSpawner;
         SceneManager.sceneLoaded -= Init;
     }     
@@ -99,14 +108,24 @@ public class GameManager : Singleton<GameManager>
         ControllsEnabled = true;
     }
 
-    private void StartTutorialWave()
+    private void StartTutorial()
     {
         _enemyWaveSpawner.StartTutorialEnemySpawning();
         UpdateWaveCount(_enemyWaveSpawner.WaveIndex, _enemyWaveSpawner.MaxWaveCount);
     }
 
+    private void SkipTutorialFunction()
+    {
+        //Skip first Wave
+        _enemyWaveSpawner.WaveIndex = 1;
+        _cameraMovement.AnimationFinished();
+        ControllsEnabled = true;
+        StartWaveSpawner();
+    }
+
     private void StartWaveSpawner()
     {
+        _tutorialManager.gameObject.SetActive(false);
         _enemyWaveSpawner.StartEnemySpawning();
         UpdateWaveCount(_enemyWaveSpawner.WaveIndex, _enemyWaveSpawner.MaxWaveCount);
     }
@@ -135,7 +154,7 @@ public class GameManager : Singleton<GameManager>
 
     private void UpdateWaveCount(int currentWaveIndex, int maxWaves)
     {
-        _wavesCountText.SetText($"Wave: {currentWaveIndex}/{maxWaves}");
+        _wavesCountText.SetText($"Wave: {currentWaveIndex}/{maxWaves-1}");
         if (currentWaveIndex == maxWaves)
         {
             PreloadEndScene();
@@ -159,16 +178,16 @@ public class GameManager : Singleton<GameManager>
         _displayMessage.GetComponent<FadeComponent>().Fade();
     }
 
-    private void WaveCountdown(float countdown)
+    private void WaveCountdown(string waveName, float countdown)
     {
-        StartCoroutine(StartCountdown(countdown));
+        StartCoroutine(StartCountdown(waveName, countdown));
     }
 
-    private IEnumerator StartCountdown(float countdown)
+    private IEnumerator StartCountdown(string waveName, float countdown)
     {
         float timeRemaining = countdown;
 
-        _countdownMessage.GetComponentInChildren<TMP_Text>().text = "Wave Starting...";
+        _countdownMessage.GetComponentInChildren<TMP_Text>().text = $"{waveName} Starting...";
         _countdownMessage.GetComponent<FadeComponent>().FadeIn();
 
         yield return new WaitForSeconds(1.5f); // Wait for 1.5 seconds

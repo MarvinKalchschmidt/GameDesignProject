@@ -9,14 +9,14 @@ public class EnemyWaveSpawner : MonoBehaviour
     [SerializeField] private EnemyWave[] _enemyWaves;
     [SerializeField] private float _initialCountdown;
     [SerializeField] private float _timeBetweenWaves = 5.0f;
+    [SerializeField] private int _currentWaveIndex;
 
     public static event Action<int> OnWaveCompleted;
     public static event Action<int> OnWaveStarting;
-    public static event Action<float> OnDisplayCountdown;
+    public static event Action<string, float> OnDisplayCountdown;
 
     public List<Enemy> enemiesAlive = new List<Enemy>();
-    private ObjectPool<Enemy> _enemyPool;  
-    private int _currentWaveIndex;
+    private ObjectPool<Enemy> _enemyPool;
     public bool _spawnEnemies = true;
 
 
@@ -82,7 +82,7 @@ public class EnemyWaveSpawner : MonoBehaviour
 
     private IEnumerator RunSpawner()
     {   
-        yield return Countdown(_initialCountdown);
+        yield return Countdown("", _initialCountdown);
         
         while (_spawnEnemies && _currentWaveIndex < MaxWaveCount)
         {
@@ -95,7 +95,7 @@ public class EnemyWaveSpawner : MonoBehaviour
             _currentWaveIndex++;
             OnWaveCompleted?.Invoke(_currentWaveIndex);
 
-            yield return Countdown(_timeBetweenWaves);
+            yield return Countdown(_enemyWaves[_currentWaveIndex].WaveName, _timeBetweenWaves);
         }
     }
 
@@ -112,10 +112,10 @@ public class EnemyWaveSpawner : MonoBehaviour
         }
     }
 
-    private IEnumerator Countdown(float countdowntime)
+    private IEnumerator Countdown(string waveName, float countdowntime)
     {
         Debug.Log("Starting Countdown");        
-        OnDisplayCountdown.Invoke(countdowntime);
+        OnDisplayCountdown.Invoke(waveName, countdowntime);
         //+ 1.5f to match UI Coutdown Time
         yield return new WaitForSeconds(countdowntime + 1.5f);
     }    

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Damage
   _description: Your attacks are hitting harder!
-  _cost: 200
+  _cost: 100
   _upgradeAmount: 50
   _upgradeType: 0

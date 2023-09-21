@@ -10,7 +10,15 @@ PrefabInstance:
     - target: {fileID: 4935359150669674468, guid: 9b4c62d18d688d349ab1e0ba2825655b, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 599b0c05e4d182a43993560bdcf00e49, type: 3}
+      objectReference: {fileID: -1415249101, guid: 2986bd82b826ce944a56609b95730804, type: 3}
+    - target: {fileID: 4935359150669674471, guid: 9b4c62d18d688d349ab1e0ba2825655b, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 4935359150669674471, guid: 9b4c62d18d688d349ab1e0ba2825655b, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 125
+      objectReference: {fileID: 0}
     - target: {fileID: 4935359150727822264, guid: 9b4c62d18d688d349ab1e0ba2825655b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Toukan_TowerInformation
   m_EditorClassIdentifier: 
   _name: Toukan
-  _cost: 300
-  _damage: 200
+  _cost: 600
+  _damage: 300
   _attackSpeed: 30
   _description: From the highest branches, the Toucan takes to the air, hurtling
     down upon enemies with precision and speed. With each dive, it deals substantial

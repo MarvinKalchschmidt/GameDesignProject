@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BossWave
   m_EditorClassIdentifier: 
   _waveName: Boss Wave
-  _spawnRate: 1
+  _spawnRate: 3
   _amountOfEnemies: 10
   _enemyPrefabs:
   - {fileID: 6256214586705541779, guid: d66a0f20b832fce4ebdfdf18675b43d1, type: 3}

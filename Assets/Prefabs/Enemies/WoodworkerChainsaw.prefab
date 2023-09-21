@@ -85,7 +85,7 @@ Transform:
   m_GameObject: {fileID: 1640010211359711614}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5530921533302687284}
@@ -133,12 +133,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b3753fee5aa52474c9334bd59db0788e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e36a6eee94ddc9d45886c9a63da51585, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 9.89, y: 6.11}
+  m_Size: {x: 1.01, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -156,14 +156,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0595c7e3fef6bd4eb00acbe5c542ca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 400
+  _maxHealth: 300
   _currentHealth: 0
   _damage: 200
   _attackCooldown: 2
-  _killReward: 200
+  _killReward: 100
   _speed: 6
   _direction: {x: -1, y: 0}
   _targetDetection: {fileID: 4614441545699194900}
+  _cooldownTimer: Infinity
+  _invulnerabilityTime: 1.5
 --- !u!50 &1132820422
 Rigidbody2D:
   serializedVersion: 4
@@ -202,14 +204,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 8.7, y: 11.01}
-    newSize: {x: 9.89, y: 6.11}
+    oldSize: {x: 1.01, y: 1.28}
+    newSize: {x: 1.01, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8.7, y: 11.01}
+  m_Size: {x: 0.64, y: 1.25}
   m_EdgeRadius: 0
 --- !u!95 &-174991795981225143
 Animator:
